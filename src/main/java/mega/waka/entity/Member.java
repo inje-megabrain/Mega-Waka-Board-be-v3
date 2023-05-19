@@ -3,6 +3,7 @@ package mega.waka.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -22,7 +23,6 @@ public class Member {
     private String fourteenDays;
     private String secretKey;
     private String thirtyDays;
-
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<Project> projects = new ArrayList<>();
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
@@ -42,5 +42,8 @@ public class Member {
     private List<ThirtyDaysLanguage> thirtyDaysLanguage = new ArrayList<>();
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<ThirtyDaysEditor> thirtyDaysEditors = new ArrayList<>();
+
+    private LocalDate startDate; //1년 구분자
+    private LocalDate updateDate; //30일 구분
 
 }

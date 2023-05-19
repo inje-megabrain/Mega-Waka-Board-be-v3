@@ -5,6 +5,7 @@ import mega.waka.repository.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -14,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -55,9 +58,57 @@ public class WakaTimeService {
        member.setFourteenDays("0:0");
        member.setSevenDays("0:0");
        member.setThirtyDays("0:0");
+       member.setOrganization(organization);
+       member.setUpdateDate(LocalDate.now());
+       member.setStartDate(LocalDate.now());
        memberRepository.save(member);
     }
+   /* public void thirtyDays_add(int days){ //30일 데이터 가공
+        List<Member> members = memberRepository.findAll();
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            String apiUrl ="https://wakatime.com/api/v1/users/current/summaries";
+            for(Member member : members) {
+                UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(apiUrl)
+                        .queryParam("range", "last_" + 1 + "_days");
 
+                HttpHeaders headers = new HttpHeaders();
+                headers.setBasicAuth(member.getSecretKey(), "");
+
+                ResponseEntity<String> response = restTemplate.exchange(
+                        builder.toUriString(),
+                        HttpMethod.GET,
+                        new HttpEntity<>(headers),
+                        String.class
+                );
+                JSONParser parser = new JSONParser();
+                JSONObject jsonObject = (JSONObject) parser.parse(response.getBody());
+                JSONArray data = (JSONArray) jsonObject.get("data");
+
+
+                JSONObject total = (JSONObject) jsonObject.get("cumulative_total");
+                String [] time = total.get("text").toString().split(":");
+                int hour = Integer.parseInt(time[0]);
+                int minute = Integer.parseInt(time[1]);
+                String [] memerTime = member.getThirtyDays().split(":");
+                int memberHour = Integer.parseInt(memerTime[0]);
+                int memberMinute = Integer.parseInt(memerTime[1]);
+                memberHour += hour;
+                memberMinute += minute;
+                if(memberMinute>=60){
+                    memberHour += memberMinute/60;
+                    memberMinute = memberMinute%60;
+                }
+                if(member.getUpdateDate().isEqual(LocalDate.now().minusDays(30))){
+                    member.setUpdateDate(LocalDate.now());
+                }
+
+
+            }
+        }catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }*/
     public List<Member> get_Member_List() {  // member 리스트 조회 api
         return memberRepository.findAll();
     }
