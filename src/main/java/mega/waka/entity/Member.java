@@ -10,7 +10,6 @@ import java.util.UUID;
 @Entity
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Member {
@@ -22,6 +21,7 @@ public class Member {
     private String sevenDays;
     private String fourteenDays;
     private String secretKey;
+    private String thirtyDays;
 
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<Project> projects = new ArrayList<>();
@@ -35,4 +35,12 @@ public class Member {
     private List<SevenDaysLanguage> sevenlanguages = new ArrayList<>();
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<SevenDaysEditor> seveneditors = new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private List<ThirtyDaysProject> thirtyDaysProjects = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private List<ThirtyDaysLanguage> thirtyDaysLanguage = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private List<ThirtyDaysEditor> thirtyDaysEditors = new ArrayList<>();
+
 }

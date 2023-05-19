@@ -48,16 +48,14 @@ public class WakaTimeService {
         memberRepository.save(member.get());
     }
     public void add_Member_By_apiKey(String name, String organization, String apiKey) {  // member 생성 api
-        Member member = new Member().builder()
-                .name(name)
-                .id(UUID.randomUUID())
-                .organization(organization)
-                .secretKey(apiKey)
-                .sevenDays("0:0")
-                .fourteenDays("0:0")
-                .build();
-        memberRepository.save(member);
-
+       Member member = new Member();
+       member.setSecretKey(apiKey);
+       member.setName(name);
+       member.setId(UUID.randomUUID());
+       member.setFourteenDays("0:0");
+       member.setSevenDays("0:0");
+       member.setThirtyDays("0:0");
+       memberRepository.save(member);
     }
 
     public List<Member> get_Member_List() {  // member 리스트 조회 api
