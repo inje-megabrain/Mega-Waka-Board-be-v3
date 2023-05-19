@@ -1,0 +1,6 @@
+spring:
+  config:
+    import:
+      - application-mysql.yaml
+      - application-jasypt.yaml
+      - application-apidoc.yaml

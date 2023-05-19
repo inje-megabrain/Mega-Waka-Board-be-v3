@@ -1,0 +1,7 @@
+asypt:
+  encryptor:
+    bean: jasyptStringEncryptor
+    passoword: ${JASYPT_PASSWORD}
+    property:
+      prefix: ENC(
+      suffix: )
