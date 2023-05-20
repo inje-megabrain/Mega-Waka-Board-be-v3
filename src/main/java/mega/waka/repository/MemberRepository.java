@@ -10,5 +10,5 @@ import java.util.UUID;
 @Repository
 public interface MemberRepository extends JpaRepository<Member, UUID> {
 
-    Optional<Member> findByNameAAndOrganization(String name, String organization);
+    Optional<Member> findByNameAndOrganization(String name, String organization);
 }
