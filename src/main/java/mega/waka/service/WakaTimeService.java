@@ -51,6 +51,10 @@ public class WakaTimeService {
         memberRepository.save(member.get());
     }
     public void add_Member_By_apiKey(String name, String organization, String apiKey) {  // member 생성 api
+       Optional<Member> findMember = memberRepository.findByNameAAndOrganization(name,organization);
+       findMember.orElseThrow(()->{
+              throw new IllegalArgumentException("이미 존재하는 멤버입니다.");
+       });
        Member member = new Member();
        member.setSecretKey(apiKey);
        member.setName(name);
