@@ -64,6 +64,6 @@ jobs:
           context: .
           platforms: linux/amd64
           push: true
-          tags: moon1257/megabrain-wa-be:latest
+          tags: ${{env.IMAGE_NAME}}latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
