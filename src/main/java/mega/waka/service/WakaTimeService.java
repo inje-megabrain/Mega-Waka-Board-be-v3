@@ -258,6 +258,7 @@ public class WakaTimeService {
                             .build();
                     languageRepository.save(language);
                     member.getLanguages().add(language);
+                    member.setUpdateDate(LocalDateTime.now());
                     memberRepository.save(member);
                 }
             }
@@ -269,6 +270,7 @@ public class WakaTimeService {
                         name =key;
                         if(member.getLanguages().get(i).getName().equals(key)){
                             member.getLanguages().get(i).setTime(languageList.get(key));
+                            member.setUpdateDate(LocalDateTime.now());
                             flag = true;
                         }
                     }
@@ -279,6 +281,7 @@ public class WakaTimeService {
                                 .build();
                         languageRepository.save(language);
                         member.getLanguages().add(language);
+                        member.setUpdateDate(LocalDateTime.now());
                         memberRepository.save(member);
                     }
                 }
@@ -293,6 +296,7 @@ public class WakaTimeService {
                             .build();
                     sevenDaysLanguageRepository.save(language);
                     member.getSevenlanguages().add(language);
+                    member.setUpdateDate(LocalDateTime.now());
                     memberRepository.save(member);
                 }
             }
@@ -304,6 +308,7 @@ public class WakaTimeService {
                         name=key;
                         if(member.getSevenlanguages().get(i).getName().equals(key)){
                             member.getSevenlanguages().get(i).setTime(languageList.get(key));
+                            member.setUpdateDate(LocalDateTime.now());
                             flag=true;
                         }
                     }
@@ -314,6 +319,7 @@ public class WakaTimeService {
                                 .build();
                         sevenDaysLanguageRepository.save(language);
                         member.getSevenlanguages().add(language);
+                        member.setUpdateDate(LocalDateTime.now());
                         memberRepository.save(member);
                     }
                 }
@@ -331,6 +337,7 @@ public class WakaTimeService {
                             .build();
                     projectRepository.save(project);
                     member.getProjects().add(project);
+                    member.setUpdateDate(LocalDateTime.now());
                     memberRepository.save(member);
                 }
             }
@@ -342,6 +349,7 @@ public class WakaTimeService {
                         name = key;
                         if(member.getProjects().get(i).getName().equals(key)){
                             member.getProjects().get(i).setTime(projectList.get(key));
+                            member.setUpdateDate(LocalDateTime.now());
                             flag=true;
                         }
                     }
@@ -352,6 +360,7 @@ public class WakaTimeService {
                                 .build();
                         projectRepository.save(project);
                         member.getProjects().add(project);
+                        member.setUpdateDate(LocalDateTime.now());
                         memberRepository.save(member);
                     }
                 }
@@ -366,6 +375,7 @@ public class WakaTimeService {
                             .build();
                     sevendaysProjectRepository.save(project);
                     member.getSevenprojects().add(project);
+                    member.setUpdateDate(LocalDateTime.now());
                     memberRepository.save(member);
                 }
             }
@@ -377,6 +387,7 @@ public class WakaTimeService {
                         name = key;
                         if(member.getSevenprojects().get(i).getName().equals(key)){
                             member.getSevenprojects().get(i).setTime(projectList.get(key));
+                            member.setUpdateDate(LocalDateTime.now());
                             flag=true;
                         }
 
@@ -388,6 +399,7 @@ public class WakaTimeService {
                                 .build();
                         sevendaysProjectRepository.save(project);
                         member.getSevenprojects().add(project);
+                        member.setUpdateDate(LocalDateTime.now());
                         memberRepository.save(member);
                     }
                 }
@@ -406,6 +418,7 @@ public class WakaTimeService {
                             .build();
                     editorRepository.save(editor);
                     member.getEditors().add(editor);
+                    member.setUpdateDate(LocalDateTime.now());
                     memberRepository.save(member);
                 }
             }
@@ -417,6 +430,7 @@ public class WakaTimeService {
                         name = key;
                         if(member.getEditors().get(i).getName().equals(key)){
                             member.getEditors().get(i).setTime(editList.get(key));
+                            member.setUpdateDate(LocalDateTime.now());
                         }
                     }
                     if(flag==false){
@@ -427,6 +441,7 @@ public class WakaTimeService {
                         editorRepository.save(editor);
                         member.getEditors().add(editor);
                         memberRepository.save(member);
+                        member.setUpdateDate(LocalDateTime.now());
                     }
                 }
             }
@@ -439,7 +454,9 @@ public class WakaTimeService {
                             .build();
                     sevenDaysEditorRepository.save(editor);
                     member.getSeveneditors().add(editor);
+                    member.setUpdateDate(LocalDateTime.now());
                     memberRepository.save(member);
+
                 }
             }
             else{
@@ -450,6 +467,7 @@ public class WakaTimeService {
                         name = key;
                         if(member.getSeveneditors().get(i).getName().equals(key)){
                             member.getSeveneditors().get(i).setTime(editList.get(key));
+                            member.setUpdateDate(LocalDateTime.now());
                             flag = true;
                         }
                     }
@@ -460,6 +478,7 @@ public class WakaTimeService {
                                 .build();
                         sevenDaysEditorRepository.save(editor);
                         member.getSeveneditors().add(editor);
+                        member.setUpdateDate(LocalDateTime.now());
                         memberRepository.save(member);
                     }
                 }

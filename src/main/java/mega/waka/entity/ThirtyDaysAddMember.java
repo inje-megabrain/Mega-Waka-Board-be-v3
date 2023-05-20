@@ -16,11 +16,12 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ThirtyDaysProject {
+public class ThirtyDaysAddMember {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String username;
     private String name;
-    private LocalDateTime date;
+    private String organization;
+    private LocalDateTime Date;
 }

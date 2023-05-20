@@ -5,6 +5,7 @@ import mega.waka.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -46,8 +47,8 @@ public class MemberService {
         member.setSevenDays("0:0");
         member.setThirtyDays("0:0");
         member.setOrganization(organization);
-        member.setUpdateDate(LocalDate.now());
-        member.setStartDate(LocalDate.now());
+        member.setUpdateDate(LocalDateTime.now());
+        member.setStartDate(LocalDateTime.now());
         memberRepository.save(member);
     }
 }
