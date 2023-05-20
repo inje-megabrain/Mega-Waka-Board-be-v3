@@ -42,31 +42,8 @@ public class WakaTimeService {
         this.sevendaysProjectRepository = sevendaysProjectRepository;
         this.sevenDaysEditorRepository = sevenDaysEditorRepository;
     }
-    public void update_apiKey(UUID id, String apiKey) {  // apiKey 변경 api
-       Optional<Member> member = memberRepository.findById(id);
-       member.orElseThrow(()->{
-              throw new IllegalArgumentException("해당하는 멤버가 없습니다.");
-       });
-        member.get().setSecretKey(apiKey);
-        memberRepository.save(member.get());
-    }
-    public void add_Member_By_apiKey(String name, String organization, String apiKey) {  // member 생성 api
-       Optional<Member> findMember = memberRepository.findByNameAAndOrganization(name,organization);
-       findMember.orElseThrow(()->{
-              throw new IllegalArgumentException("이미 존재하는 멤버입니다.");
-       });
-       Member member = new Member();
-       member.setSecretKey(apiKey);
-       member.setName(name);
-       member.setId(UUID.randomUUID());
-       member.setFourteenDays("0:0");
-       member.setSevenDays("0:0");
-       member.setThirtyDays("0:0");
-       member.setOrganization(organization);
-       member.setUpdateDate(LocalDate.now());
-       member.setStartDate(LocalDate.now());
-       memberRepository.save(member);
-    }
+
+
    /* public void thirtyDays_add(int days){ //30일 데이터 가공
         List<Member> members = memberRepository.findAll();
         try {
