@@ -1,15 +1,11 @@
-name: Docker
-
+name: Docker CI
 
 on:
   push:
-    branches:
-    - main
-    - develop
-    - feat/**
-    # Publish semver tags as releases.
+    branches: [ "main" ]
   pull_request:
-    branches: ["develop"]
+    branches: [ "main" ]
+
 env:
   # Use docker.io for Docker Hub if empty
   REGISTRY: docker.io
@@ -18,6 +14,7 @@ env:
   DOCKER_REGISTRY_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
   DOCKER_REGISTRY_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
   JASYPT_ENCRYPTOR_PASSWORD: ${{ secrets.JASYPT_ENCRYPTOR_PASSWORD }}
+
 jobs:
 
   build-dockerized:
@@ -73,4 +70,4 @@ jobs:
           name: 'MINOR'
           value: ${{ env.NEW_MINOR_VERSION }}
           repository: ${{ secrets.REPO }}
-          token: ${{ secrets.REPO_TOKEN }}
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}
