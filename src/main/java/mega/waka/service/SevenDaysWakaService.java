@@ -205,12 +205,17 @@ public class SevenDaysWakaService {
         return editList;
 
     }
-    private void set_Member_By_Language(Member member) {
+    private void set_Member_By_Language(Member member, JSONArray languages) {
         if (member.getSevenlanguages().size() == 0) {
-            for (String key : languageList.keySet()) {
+            for (int i=0;i<languages.size();i++) {
+                JSONObject obj = (JSONObject) languages.get(i);
+                JSONObject name = (JSONObject) obj.get("name");
+                JSONObject hour = (JSONObject) obj.get("hours");
+                JSONObject min = (JSONObject) obj.get("minutes");
+                String time = hour.get("text").toString() + ":" + min.get("text").toString();
                 SevenDaysLanguage language = new SevenDaysLanguage().builder()
-                        .name(key)
-                        .time(languageList.get(key))
+                        .name(name.toString())
+                        .time(time)
                         .build();
                 sevenDaysLanguageRepository.save(language);
                 member.getSevenlanguages().add(language);
@@ -220,10 +225,16 @@ public class SevenDaysWakaService {
             for (int i = 0; i < member.getSevenlanguages().size(); i++) {
                 boolean flag = false;
                 String name = "";
-                for (String key : languageList.keySet()) {
-                    name = key;
-                    if (member.getSevenlanguages().get(i).getName().equals(key)) {
-                        member.getSevenlanguages().get(i).setTime(languageList.get(key));
+                String time = "";
+                for (int j=0;j<languages.size();j++) {
+                    JSONObject obj = (JSONObject) languages.get(i);
+                    JSONObject names = (JSONObject) obj.get("name");
+                    JSONObject hour = (JSONObject) obj.get("hours");
+                    JSONObject min = (JSONObject) obj.get("minutes");
+                    time = hour.get("text").toString() + ":" + min.get("text").toString();
+                    name = names.toString();
+                    if (member.getSevenlanguages().get(i).getName().equals(names.toString())) {
+                        member.getSevenlanguages().get(i).setTime(time);
                         flag = true;
                     }
                     if(member.getSevenlanguages().get(i).getTime().equals("0:0")){
@@ -233,7 +244,7 @@ public class SevenDaysWakaService {
                 if (flag == false) {
                     SevenDaysLanguage language = new SevenDaysLanguage().builder()
                             .name(name)
-                            .time(languageList.get(name))
+                            .time(time)
                             .build();
                     sevenDaysLanguageRepository.save(language);
                     member.getSevenlanguages().add(language);
@@ -242,36 +253,46 @@ public class SevenDaysWakaService {
             }
         }
     }
-    private void set_Member_By_Project(Member member) {
-        if(member.getSevenprojects().size()==0){
-            for (String key : projectList.keySet()) {
+    private void set_Member_By_Project(Member member, JSONArray projects) {
+        if (member.getSevenprojects().size() == 0) {
+            for (int i=0;i<projects.size();i++) {
+                JSONObject obj = (JSONObject) projects.get(i);
+                JSONObject name = (JSONObject) obj.get("name");
+                JSONObject hour = (JSONObject) obj.get("hours");
+                JSONObject min = (JSONObject) obj.get("minutes");
+                String time = hour.get("text").toString() + ":" + min.get("text").toString();
                 SevenDaysProject project = new SevenDaysProject().builder()
-                        .name(key)
-                        .time(projectList.get(key))
+                        .name(name.toString())
+                        .time(time)
                         .build();
                 sevendaysProjectRepository.save(project);
                 member.getSevenprojects().add(project);
                 memberRepository.save(member);
             }
-        }
-        else{
-            for(int i=0; i<member.getSevenprojects().size();i++){
+        } else {
+            for (int i = 0; i < member.getSevenprojects().size(); i++) {
                 boolean flag = false;
-                String name="";
-                for(String key : projectList.keySet()){
-                    name = key;
-                    if(member.getSevenprojects().get(i).getName().equals(key)){
-                        member.getSevenprojects().get(i).setTime(projectList.get(key));
-                        flag=true;
+                String name = "";
+                String time = "";
+                for (int j=0;j<projects.size();j++) {
+                    JSONObject obj = (JSONObject) projects.get(i);
+                    JSONObject names = (JSONObject) obj.get("name");
+                    JSONObject hour = (JSONObject) obj.get("hours");
+                    JSONObject min = (JSONObject) obj.get("minutes");
+                    time = hour.get("text").toString() + ":" + min.get("text").toString();
+                    name = names.toString();
+                    if (member.getSevenprojects().get(i).getName().equals(names.toString())) {
+                        member.getSevenprojects().get(i).setTime(time);
+                        flag = true;
                     }
                     if(member.getSevenprojects().get(i).getTime().equals("0:0")){
                         member.getSevenprojects().remove(i);
                     }
                 }
-                if(flag==false){
+                if (flag == false) {
                     SevenDaysProject project = new SevenDaysProject().builder()
                             .name(name)
-                            .time(projectList.get(name))
+                            .time(time)
                             .build();
                     sevendaysProjectRepository.save(project);
                     member.getSevenprojects().add(project);
@@ -280,37 +301,46 @@ public class SevenDaysWakaService {
             }
         }
     }
-    private void set_Member_By_Editor(Member member) {
-        if(member.getSeveneditors().size()==0){
-            for (String key : editList.keySet()) {
-
+    private void set_Member_By_Editor(Member member,JSONArray editors) {
+        if (member.getSeveneditors().size() == 0) {
+            for (int i=0;i<editors.size();i++) {
+                JSONObject obj = (JSONObject) editors.get(i);
+                JSONObject name = (JSONObject) obj.get("name");
+                JSONObject hour = (JSONObject) obj.get("hours");
+                JSONObject min = (JSONObject) obj.get("minutes");
+                String time = hour.get("text").toString() + ":" + min.get("text").toString();
                 SevenDaysEditor editor = new SevenDaysEditor().builder()
-                        .name(key)
-                        .time(editList.get(key))
+                        .name(name.toString())
+                        .time(time)
                         .build();
                 sevenDaysEditorRepository.save(editor);
                 member.getSeveneditors().add(editor);
                 memberRepository.save(member);
             }
-        }
-        else{
-            for(int i=0; i<member.getSeveneditors().size();i++){
+        } else {
+            for (int i = 0; i < member.getSeveneditors().size(); i++) {
                 boolean flag = false;
-                String name="";
-                for(String key : editList.keySet()){
-                    name = key;
-                    if(member.getSeveneditors().get(i).getName().equals(key)){
-                        member.getSeveneditors().get(i).setTime(editList.get(key));
-                        flag=true;
+                String name = "";
+                String time = "";
+                for (int j=0;j<editors.size();j++) {
+                    JSONObject obj = (JSONObject) editors.get(i);
+                    JSONObject names = (JSONObject) obj.get("name");
+                    JSONObject hour = (JSONObject) obj.get("hours");
+                    JSONObject min = (JSONObject) obj.get("minutes");
+                    time = hour.get("text").toString() + ":" + min.get("text").toString();
+                    name = names.toString();
+                    if (member.getSeveneditors().get(i).getName().equals(names.toString())) {
+                        member.getSeveneditors().get(i).setTime(time);
+                        flag = true;
                     }
                     if(member.getSeveneditors().get(i).getTime().equals("0:0")){
                         member.getSeveneditors().remove(i);
                     }
                 }
-                if(flag==false){
+                if (flag == false) {
                     SevenDaysEditor editor = new SevenDaysEditor().builder()
                             .name(name)
-                            .time(editList.get(name))
+                            .time(time)
                             .build();
                     sevenDaysEditorRepository.save(editor);
                     member.getSeveneditors().add(editor);
@@ -318,5 +348,4 @@ public class SevenDaysWakaService {
                 }
             }
         }
-    }
 }
