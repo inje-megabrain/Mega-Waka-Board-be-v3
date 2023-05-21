@@ -36,6 +36,7 @@ public class MemberService {
        List<ResponseMemberDto> dtos = new ArrayList<>();
        for(Member member : findMembers){
            ResponseMemberDto dto = new ResponseMemberDto().builder()
+                   .id(member.getId())
                    .fourteenDays(member.getFourteenDays())
                    .image(member.getImage())
                    .oneDay(member.getOneDay())
