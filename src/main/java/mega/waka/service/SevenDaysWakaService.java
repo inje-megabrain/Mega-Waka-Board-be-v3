@@ -76,11 +76,10 @@ public class SevenDaysWakaService {
                 JSONObject data = (JSONObject) jsonObject.get("data");
 
                 JSONArray categories = (JSONArray) data.get("categories");
-                System.out.println("categories = " + categories);
                 JSONObject index = (JSONObject) categories.get(0);
                 member.setThirtyDays(index.get("text").toString());
                 memberRepository.save(member);
-                JSONArray languages = (JSONArray) data.get("languages");
+               /* JSONArray languages = (JSONArray) data.get("languages");
                 JSONArray editors = (JSONArray) data.get("editors");
                 JSONArray projects = (JSONArray) data.get("projects");
 
@@ -92,7 +91,7 @@ public class SevenDaysWakaService {
                 }
                 set_Member_By_Language(member);
                 set_Member_By_Editor(member);
-                set_Member_By_Project(member);
+                set_Member_By_Project(member);*/
                 DayOfWeek dayOfWeek = LocalDate.now().getDayOfWeek();
                 if(dayOfWeek.getDisplayName(TextStyle.FULL, Locale.KOREAN).equals("금요일")){
                     int money = member.getMoney().getAmount();
