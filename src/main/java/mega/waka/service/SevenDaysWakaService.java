@@ -54,7 +54,7 @@ public class SevenDaysWakaService {
         String responseData="";
         try {
             RestTemplate restTemplate = new RestTemplate();
-            String apiUrl = "https://wakatime.com/api/v1/users/stats/last_7_days";
+            String apiUrl = "https://wakatime.com/api/v1/users/current/stats/last_7_days";
             for (Member member : members) {
 
                 UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(apiUrl);
