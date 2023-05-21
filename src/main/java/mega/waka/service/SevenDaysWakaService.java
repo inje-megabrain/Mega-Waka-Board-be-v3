@@ -83,15 +83,10 @@ public class SevenDaysWakaService {
                 JSONArray editors = (JSONArray) data.get("editors");
                 JSONArray projects = (JSONArray) data.get("projects");
 
-                if(languages.isEmpty() || editors.isEmpty() || projects.isEmpty()) continue;
-                else {
-                    set_Language(languages);
-                    set_Project(projects);
-                    set_Editor(editors);
-                }
                 set_Member_By_Language(member);
                 set_Member_By_Editor(member);
                 set_Member_By_Project(member);
+
                 DayOfWeek dayOfWeek = LocalDate.now().getDayOfWeek();
                 if(dayOfWeek.getDisplayName(TextStyle.FULL, Locale.KOREAN).equals("금요일")){
                     int money = member.getMoney().getAmount();
