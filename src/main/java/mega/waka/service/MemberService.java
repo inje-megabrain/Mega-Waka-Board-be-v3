@@ -3,6 +3,7 @@ package mega.waka.service;
 import mega.waka.entity.Member;
 import mega.waka.entity.Money;
 import mega.waka.entity.dto.ResponseInfoDto;
+import mega.waka.entity.dto.ResponseInfoThirtyDaysDto;
 import mega.waka.entity.dto.ResponseMemberDto;
 import mega.waka.repository.MemberRepository;
 import mega.waka.repository.MoneyRepository;
@@ -71,49 +72,31 @@ public class MemberService {
         memberRepository.save(member.get());
     }
     public ResponseInfoDto get_Member_info_day(UUID id, int date){
-        String responseData="";
-        String apiUrl="";
-        ResponseInfoDto responseInfoDto = null;
         Optional<Member> findMember = memberRepository.findById(id);
         findMember.orElseThrow(()->{
             throw new IllegalArgumentException("해당하는 멤버가 없습니다.");
         });
-        try {
-            RestTemplate restTemplate = new RestTemplate();
-            if(date ==7) apiUrl = "https://wakatime.com/api/v1/users/current/stats/last_7_days";
-            else apiUrl = "https://wakatime.com/api/v1/users/current/stats/last_30_days";
 
-            UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(apiUrl);
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.setBasicAuth(findMember.get().getSecretKey(), "");
-
-            ResponseEntity<String> response = restTemplate.exchange(
-                    builder.toUriString(),
-                    HttpMethod.GET,
-                    new HttpEntity<>(headers),
-                    String.class
-            );
-            responseData = response.getBody();
-            JSONParser parser = new JSONParser();
-            JSONObject jsonObject = (JSONObject) parser.parse(responseData);
-            JSONObject data = (JSONObject) jsonObject.get("data");
-
-
-            JSONArray languages = (JSONArray) data.get("languages");
-            JSONArray editors = (JSONArray) data.get("editors");
-            JSONArray projects = (JSONArray) data.get("projects");
-
-            responseInfoDto = new ResponseInfoDto().builder()
-                    .name(findMember.get().getName())
-                    .Languages(languages)
-                    .Editors(editors)
-                    .Proejects(projects)
-                    .build();
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
+        ResponseInfoDto responseInfoDto = new ResponseInfoDto().builder()
+                .name(findMember.get().getName())
+                .Languages(findMember.get().getSevenlanguages())
+                .Editors(findMember.get().getSeveneditors())
+                .Proejects(findMember.get().getSevenprojects())
+                .build();
         return responseInfoDto;
+    }
+    public ResponseInfoThirtyDaysDto get_Member_info_ThirtyDays(UUID id, int date){
+        Optional<Member> findMember = memberRepository.findById(id);
+        findMember.orElseThrow(()->{
+            throw new IllegalArgumentException("해당하는 멤버가 없습니다.");
+        });
+        ResponseInfoThirtyDaysDto dto = new ResponseInfoThirtyDaysDto().builder()
+                .name(findMember.get().getName())
+                .Editors(findMember.get().getThirtyDaysEditors())
+                .Languages(findMember.get().getThirtyDaysLanguages())
+                .Proejects(findMember.get().getThirtyDaysProjects())
+                .build();
+        return dto;
     }
     public void add_Member_By_apiKey(String name, String organization, String apiKey, String githubId,String department) {  // member 생성 api
         Member findMember = memberRepository.findByNameAndOrganization(name,organization);

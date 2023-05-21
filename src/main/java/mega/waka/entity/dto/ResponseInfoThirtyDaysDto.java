@@ -5,9 +5,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import mega.waka.entity.editor.SevenDaysEditor;
+import mega.waka.entity.editor.ThirtyDaysEditor;
 import mega.waka.entity.language.SevenDaysLanguage;
+import mega.waka.entity.language.ThirtyDaysLanguage;
 import mega.waka.entity.project.SevenDaysProject;
-import org.json.simple.JSONArray;
+import mega.waka.entity.project.ThirtyDaysProject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,9 +18,10 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResponseInfoDto {
+public class ResponseInfoThirtyDaysDto {
+
     private String name;
-    private List<SevenDaysEditor> Editors = new ArrayList<>();
-    private List<SevenDaysLanguage> Languages = new ArrayList<>();
-    private List<SevenDaysProject> Proejects = new ArrayList<>();
+    private List<ThirtyDaysEditor> Editors = new ArrayList<>();
+    private List<ThirtyDaysLanguage> Languages = new ArrayList<>();
+    private List<ThirtyDaysProject> Proejects = new ArrayList<>();
 }

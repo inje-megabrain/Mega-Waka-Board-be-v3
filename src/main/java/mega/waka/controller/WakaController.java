@@ -55,7 +55,8 @@ public class WakaController {
     @Operation(summary = "Get Member API", description = "멤버를 상세 조회합니다. date =7 or 30")
     public ResponseEntity getMember_Info(@PathVariable String id, @RequestParam int date){
         try{
-            return new ResponseEntity(memberService.get_Member_info_day(UUID.fromString(id),date),HttpStatus.OK);
+            if(date==7)return new ResponseEntity(memberService.get_Member_info_day(UUID.fromString(id),date),HttpStatus.OK);
+            else return new ResponseEntity(memberService.get_Member_info_ThirtyDays(UUID.fromString(id),date),HttpStatus.OK);
         }catch (RuntimeException e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }
