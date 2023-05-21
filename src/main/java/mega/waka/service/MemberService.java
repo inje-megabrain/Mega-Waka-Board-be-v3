@@ -5,9 +5,18 @@ import mega.waka.entity.Money;
 import mega.waka.entity.dto.ResponseInfoDto;
 import mega.waka.entity.dto.ResponseInfoThirtyDaysDto;
 import mega.waka.entity.dto.ResponseMemberDto;
+import mega.waka.entity.editor.SevenDaysEditor;
+import mega.waka.entity.editor.ThirtyDaysEditor;
+import mega.waka.entity.language.SevenDaysLanguage;
+import mega.waka.entity.language.ThirtyDaysLanguage;
+import mega.waka.entity.project.SevenDaysProject;
+import mega.waka.entity.project.ThirtyDaysProject;
 import mega.waka.repository.MemberRepository;
 import mega.waka.repository.MoneyRepository;
+import mega.waka.repository.editor.SevenDaysEditorRepository;
 import mega.waka.repository.language.OneDayLanguageRepository;
+import mega.waka.repository.language.SevenDaysLanguageRepository;
+import mega.waka.repository.project.SevendaysProjectRepository;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -29,11 +38,22 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final MoneyRepository moneyRepository;
+    private final SevenDaysLanguageRepository sevenDaysLanguageRepository;
+    private final SevendaysProjectRepository sevendaysProjectRepository;
+
+    private final SevenDaysEditorRepository sevenDaysEditorRepository;
+
+    private Map<String,String> languageList = new HashMap<>();
+    private Map<String,String> projectList = new HashMap<>();
+    private Map<String,String> editList = new HashMap<>();
 
     public MemberService(MemberRepository memberRepository,
-                          MoneyRepository moneyRepository) {
+                         MoneyRepository moneyRepository, SevenDaysLanguageRepository sevenDaysLanguageRepository, SevendaysProjectRepository sevendaysProjectRepository, SevenDaysEditorRepository sevenDaysEditorRepository) {
         this.memberRepository = memberRepository;
         this.moneyRepository = moneyRepository;
+        this.sevenDaysLanguageRepository = sevenDaysLanguageRepository;
+        this.sevendaysProjectRepository = sevendaysProjectRepository;
+        this.sevenDaysEditorRepository = sevenDaysEditorRepository;
     }
     public List<ResponseMemberDto> memberList(){
        List<Member> findMembers = memberRepository.findAll();
@@ -71,21 +91,58 @@ public class MemberService {
         member.get().setSecretKey(apiKey);
         memberRepository.save(member.get());
     }
-    public ResponseInfoDto get_Member_info_day(UUID id, int date){
+    public ResponseInfoDto get_Member_info_day(UUID id){
         Optional<Member> findMember = memberRepository.findById(id);
         findMember.orElseThrow(()->{
             throw new IllegalArgumentException("해당하는 멤버가 없습니다.");
         });
+        ResponseInfoDto responseInfoDto=null;
+        String responseData="";
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            String apiUrl ="https://wakatime.com/api/v1/users/current/stats/last_7_days";
+            UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(apiUrl);
 
-        ResponseInfoDto responseInfoDto = new ResponseInfoDto().builder()
+            HttpHeaders headers = new HttpHeaders();
+            headers.setBasicAuth(findMember.get().getSecretKey(),"");
+
+            ResponseEntity<String> response = restTemplate.exchange(
+                    builder.toUriString(),
+                    HttpMethod.GET,
+                    new HttpEntity<>(headers),
+                    String.class
+            );
+            responseData = response.getBody();
+            JSONParser parser = new JSONParser();
+            JSONObject jsonObject = (JSONObject) parser.parse(responseData);
+            JSONObject data = (JSONObject) jsonObject.get("data");
+
+            JSONArray languages = (JSONArray) data.get("languages");
+            JSONArray editors = (JSONArray) data.get("editors");
+            JSONArray projects = (JSONArray) data.get("projects");
+
+            if(!languages.isEmpty() || !editors.isEmpty() || !projects.isEmpty()){
+                set_Language(languages);
+                set_Project(projects);
+                set_Editor(editors);
+            }
+            set_Member_By_Language(findMember.get());
+            set_Member_By_Editor(findMember.get());
+            set_Member_By_Project(findMember.get());
+
+            responseInfoDto = new ResponseInfoDto().builder()
                 .name(findMember.get().getName())
                 .Languages(findMember.get().getSevenlanguages())
                 .Editors(findMember.get().getSeveneditors())
                 .Proejects(findMember.get().getSevenprojects())
                 .build();
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+
         return responseInfoDto;
     }
-    public ResponseInfoThirtyDaysDto get_Member_info_ThirtyDays(UUID id, int date){
+    public ResponseInfoThirtyDaysDto get_Member_info_ThirtyDays(UUID id){
         Optional<Member> findMember = memberRepository.findById(id);
         findMember.orElseThrow(()->{
             throw new IllegalArgumentException("해당하는 멤버가 없습니다.");
@@ -119,6 +176,262 @@ public class MemberService {
         }
         else{
             throw new IllegalArgumentException("이미 존재하는 멤버입니다.");
+        }
+    }
+
+    private void set_Member_By_Language(Member member, JSONArray languages) {
+        System.out.println("languages = " + languages);
+        if (member.getSevenlanguages().size() == 0) {
+            for (int i=0;i<languages.size();i++) {
+                JSONObject obj = (JSONObject) languages.get(i);
+                JSONObject name = (JSONObject) obj.get("name");
+                JSONObject hour = (JSONObject) obj.get("hours");
+                JSONObject min = (JSONObject) obj.get("minutes");
+                String time = hour.get("text").toString() + ":" + min.get("text").toString();
+                SevenDaysLanguage language = new SevenDaysLanguage().builder()
+                        .name(name.toString())
+                        .time(time)
+                        .build();
+                sevenDaysLanguageRepository.save(language);
+                member.getSevenlanguages().add(language);
+                memberRepository.save(member);
+            }
+        } else {
+            for (int i = 0; i < member.getSevenlanguages().size(); i++) {
+                boolean flag = false;
+                String name = "";
+                String time = "";
+                for (int j=0;j<languages.size();j++) {
+                    JSONObject obj = (JSONObject) languages.get(j);
+                    System.out.println(obj);
+                    JSONObject names = (JSONObject) obj.get("name");
+                    JSONObject hour = (JSONObject) obj.get("hours");
+                    JSONObject min = (JSONObject) obj.get("minutes");
+                    time = hour.get("text").toString() + ":" + min.get("text").toString();
+                    if (member.getSevenlanguages().get(i).getName().equals(names.toString())) {
+                        member.getSevenlanguages().get(i).setTime(time);
+                        flag = true;
+                    }
+                    if(member.getSevenlanguages().get(i).getTime().equals("0:0")){
+                        member.getSevenlanguages().remove(i);
+                    }
+                }
+                if (flag == false) {
+                    SevenDaysLanguage language = new SevenDaysLanguage().builder()
+                            .name(name)
+                            .time(time)
+                            .build();
+                    sevenDaysLanguageRepository.save(language);
+                    member.getSevenlanguages().add(language);
+                    memberRepository.save(member);
+                }
+            }
+        }
+    }
+    private Map<String,String> set_Language(JSONArray languages){
+        for(int j=0;j<languages.size();j++) {
+            JSONObject index = (JSONObject) languages.get(j);
+            String name = (String) index.get("name");
+            Long hour = (Long) index.get("hours");
+            Long min = (Long) index.get("minutes");
+            if(min>=60){
+                hour+=min/60;
+                min = min%60;
+            }
+            if(languageList.containsKey(name)){
+                String[] time = languageList.get(name).split(":");
+                Long hour2 = Long.parseLong(time[0]);
+                Long min2 = Long.parseLong(time[1]);
+                hour += hour2;
+                min += min2;
+                if(min>=60){
+                    hour+=min/60;
+                    min = min%60;
+                }
+                languageList.replace(name,hour+":"+min);
+            }
+            else{
+
+                languageList.put(name,hour+":"+min);
+            }
+        }
+
+        return languageList;
+    }
+    private Map<String,String> set_Project(JSONArray projects){
+
+        for(int j=0;j<projects.size();j++) {
+            JSONObject index = (JSONObject) projects.get(j);
+            String name = (String) index.get("name");
+            Long hour = (Long) index.get("hours");
+            Long min = (Long) index.get("minutes");
+            if(min>=60){
+                hour+=min/60;
+                min = min%60;
+            }
+            if(projectList.containsKey(name)){
+                String[] time = projectList.get(name).split(":");
+                Long hour2 = Long.parseLong(time[0]);
+                Long min2 = Long.parseLong(time[1]);
+                hour += hour2;
+                min += min2;
+                if(min>=60){
+                    hour+=min/60;
+                    min = min%60;
+                }
+                projectList.replace(name,hour+":"+min);
+            }
+            else{
+
+                projectList.put(name,hour+":"+min);
+            }
+        }
+        return projectList;
+
+    }
+    private Map<String,String> set_Editor(JSONArray editor){
+
+        for(int j=0;j<editor.size();j++) {
+            JSONObject index = (JSONObject) editor.get(j);
+            String name = (String) index.get("name");
+            Long hour = (Long) index.get("hours");
+            Long min = (Long) index.get("minutes");
+            if(min>=60){
+                hour+=min/60;
+                min = min%60;
+            }
+            if(editList.containsKey(name)){
+                String[] time = editList.get(name).split(":");
+                Long hour2 = Long.parseLong(time[0]);
+                Long min2 = Long.parseLong(time[1]);
+                hour += hour2;
+                min += min2;
+                if(min>=60){
+                    hour+=min/60;
+                    min = min%60;
+                }
+                editList.replace(name,hour+":"+min);
+            }
+            else{
+
+                editList.put(name,hour+":"+min);
+            }
+        }
+        return editList;
+
+    }
+    private void set_Member_By_Language(Member member) {
+        if (member.getSevenlanguages().size() == 0) {
+            for (String key : languageList.keySet()) {
+                SevenDaysLanguage language = new SevenDaysLanguage().builder()
+                        .name(key)
+                        .time(languageList.get(key))
+                        .build();
+                sevenDaysLanguageRepository.save(language);
+                member.getSevenlanguages().add(language);
+                memberRepository.save(member);
+            }
+        } else {
+            for (int i = 0; i < member.getSevenlanguages().size(); i++) {
+                boolean flag = false;
+                String name = "";
+                for (String key : languageList.keySet()) {
+                    name = key;
+                    if (member.getSevenlanguages().get(i).getName().equals(key)) {
+                        member.getSevenlanguages().get(i).setTime(languageList.get(key));
+                        flag = true;
+                    }
+                    if(member.getSevenlanguages().get(i).getTime().equals("0:0")){
+                        member.getSevenlanguages().remove(i);
+                    }
+                }
+                if (flag == false) {
+                    SevenDaysLanguage language = new SevenDaysLanguage().builder()
+                            .name(name)
+                            .time(languageList.get(name))
+                            .build();
+                    sevenDaysLanguageRepository.save(language);
+                    member.getSevenlanguages().add(language);
+                    memberRepository.save(member);
+                }
+            }
+        }
+    }
+    private void set_Member_By_Project(Member member) {
+        if(member.getSevenprojects().size()==0){
+            for (String key : projectList.keySet()) {
+                SevenDaysProject project = new SevenDaysProject().builder()
+                        .name(key)
+                        .time(projectList.get(key))
+                        .build();
+                sevendaysProjectRepository.save(project);
+                member.getSevenprojects().add(project);
+                memberRepository.save(member);
+            }
+        }
+        else{
+            for(int i=0; i<member.getSevenprojects().size();i++){
+                boolean flag = false;
+                String name="";
+                for(String key : projectList.keySet()){
+                    name = key;
+                    if(member.getSevenprojects().get(i).getName().equals(key)){
+                        member.getSevenprojects().get(i).setTime(projectList.get(key));
+                        flag=true;
+                    }
+                    if(member.getSevenprojects().get(i).getTime().equals("0:0")){
+                        member.getSevenprojects().remove(i);
+                    }
+                }
+                if(flag==false){
+                    SevenDaysProject project = new SevenDaysProject().builder()
+                            .name(name)
+                            .time(projectList.get(name))
+                            .build();
+                    sevendaysProjectRepository.save(project);
+                    member.getSevenprojects().add(project);
+                    memberRepository.save(member);
+                }
+            }
+        }
+    }
+    private void set_Member_By_Editor(Member member) {
+        if(member.getSeveneditors().size()==0){
+            for (String key : editList.keySet()) {
+
+                SevenDaysEditor editor = new SevenDaysEditor().builder()
+                        .name(key)
+                        .time(editList.get(key))
+                        .build();
+                sevenDaysEditorRepository.save(editor);
+                member.getSeveneditors().add(editor);
+                memberRepository.save(member);
+            }
+        }
+        else{
+            for(int i=0; i<member.getSeveneditors().size();i++){
+                boolean flag = false;
+                String name="";
+                for(String key : editList.keySet()){
+                    name = key;
+                    if(member.getSeveneditors().get(i).getName().equals(key)){
+                        member.getSeveneditors().get(i).setTime(editList.get(key));
+                        flag=true;
+                    }
+                    if(member.getSeveneditors().get(i).getTime().equals("0:0")){
+                        member.getSeveneditors().remove(i);
+                    }
+                }
+                if(flag==false){
+                    SevenDaysEditor editor = new SevenDaysEditor().builder()
+                            .name(name)
+                            .time(editList.get(name))
+                            .build();
+                    sevenDaysEditorRepository.save(editor);
+                    member.getSeveneditors().add(editor);
+                    memberRepository.save(member);
+                }
+            }
         }
     }
 }

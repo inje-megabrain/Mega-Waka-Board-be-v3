@@ -34,9 +34,9 @@ public class ThirtyDaysWakaService {
     private final ThirtyDaysEditorRepository thirtyDaysEditorRepository;
     private final ThirtyDaysLanguageRepository thirtyDaysLanguageRepository;
     private final MemberRepository memberRepository;
-    private Map<String,String> languageList = new HashMap<>();
-    private Map<String,String> projectList = new HashMap<>();
-    private Map<String,String> editList = new HashMap<>();
+private Map<String,String> languageList = new HashMap<>();
+private Map<String,String> projectList = new HashMap<>();
+private Map<String,String> editList = new HashMap<>();
 
     public ThirtyDaysWakaService(ThirtyDaysProjectRepository thirtyDaysProjectRepository, ThirtyDaysEditorRepository thirtyDaysEditorRepository, ThirtyDaysLanguageRepository thirtyDaysLanguageRepository, MemberRepository memberRepository) {
         this.thirtyDaysProjectRepository = thirtyDaysProjectRepository;
