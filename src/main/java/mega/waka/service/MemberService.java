@@ -410,6 +410,7 @@ public class MemberService {
         }
         else{
             for(int i=0; i<member.getSeveneditors().size();i++){
+                
                 boolean flag = false;
                 String name="";
                 for(String key : editList.keySet()){
