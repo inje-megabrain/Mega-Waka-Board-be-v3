@@ -1,5 +1,6 @@
 package mega.waka.service;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import mega.waka.entity.Member;
 import mega.waka.entity.editor.SevenDaysEditor;
 import mega.waka.entity.language.SevenDaysLanguage;
@@ -48,16 +49,17 @@ public class SevenDaysWakaService {
         this.sevendaysProjectRepository = sevendaysProjectRepository;
         this.memberRepository = memberRepository;
     }
-
+    @JsonIgnore
     public void update_SevenDays(){
         List<Member> members = memberRepository.findAll();
         String responseData="";
         try {
             RestTemplate restTemplate = new RestTemplate();
-            String apiUrl = "https://wakatime.com/api/v1/users/current/stats/last_7_days";
+            String apiUrl ="https://wakatime.com/api/v1/users/current/summaries";
             for (Member member : members) {
 
-                UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(apiUrl);
+                UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(apiUrl)
+                        .queryParam("range","last_"+7+"_days");
 
                 HttpHeaders headers = new HttpHeaders();
                 headers.setBasicAuth(member.getSecretKey(),"");
@@ -69,25 +71,24 @@ public class SevenDaysWakaService {
                         String.class
                 );
                 responseData = response.getBody();
+
                 JSONParser parser = new JSONParser();
                 JSONObject jsonObject = (JSONObject) parser.parse(responseData);
-                JSONObject data = (JSONObject) jsonObject.get("data");
-                //System.out.println("data = " + data);
-                JSONArray categories = (JSONArray) data.get("categories");
-                System.out.println("categories = " + categories);
-                JSONObject index = (JSONObject) categories.get(0);
-                member.setSevenDays(index.get("text").toString());
-                memberRepository.save(member);
+                JSONArray data = (JSONArray) jsonObject.get("data");
+                JSONObject total = (JSONObject) jsonObject.get("cumulative_total");
+                member.setSevenDays(total.get("text").toString());
+                for(int i=0;i<data.size();i++){
+                    JSONObject obj = (JSONObject) data.get(i);
+                    JSONArray languages = (JSONArray) obj.get("languages");
+                    JSONArray editors = (JSONArray) obj.get("editors");
+                    JSONArray projects = (JSONArray) obj.get("projects");
 
-                JSONArray languages = (JSONArray) data.get("languages");
-                JSONArray editors = (JSONArray) data.get("editors");
-                JSONArray projects = (JSONArray) data.get("projects");
-
-                if(languages.isEmpty() || editors.isEmpty() || projects.isEmpty()) continue;
-                else {
-                    set_Language(languages);
-                    set_Project(projects);
-                    set_Editor(editors);
+                    if(languages.isEmpty() || editors.isEmpty() || projects.isEmpty()) continue;
+                    else {
+                        set_Language(languages);
+                        set_Project(projects);
+                        set_Editor(editors);
+                    }
                 }
                 set_Member_By_Language(member);
                 set_Member_By_Editor(member);
