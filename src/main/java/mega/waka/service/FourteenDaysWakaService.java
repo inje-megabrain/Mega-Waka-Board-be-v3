@@ -65,6 +65,7 @@ public class FourteenDaysWakaService {
 
                 
                 JSONObject total = (JSONObject) jsonObject.get("cumulative_total");
+                System.out.println(total);
                 member.setFourteenDays(total.get("text").toString());
                 for(int i=0;i<data.size();i++){
                     JSONObject obj = (JSONObject) data.get(i);

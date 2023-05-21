@@ -77,7 +77,7 @@ public class SevenDaysWakaService {
 
                 JSONArray categories = (JSONArray) data.get("categories");
                 JSONObject index = (JSONObject) categories.get(0);
-                member.setThirtyDays(index.get("text").toString());
+                member.setSevenDays(index.get("text").toString());
                 memberRepository.save(member);
                /* JSONArray languages = (JSONArray) data.get("languages");
                 JSONArray editors = (JSONArray) data.get("editors");
