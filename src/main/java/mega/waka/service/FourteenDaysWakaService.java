@@ -61,11 +61,9 @@ public class FourteenDaysWakaService {
                 JSONParser parser = new JSONParser();
                 JSONObject jsonObject = (JSONObject) parser.parse(responseData);
                 JSONArray data = (JSONArray) jsonObject.get("data");
-                
 
-                
                 JSONObject total = (JSONObject) jsonObject.get("cumulative_total");
-                System.out.println(total);
+
                 member.setFourteenDays(total.get("text").toString());
                 for(int i=0;i<data.size();i++){
                     JSONObject obj = (JSONObject) data.get(i);
@@ -287,6 +285,7 @@ public class FourteenDaysWakaService {
                     name = key;
                     if (member.getFourtyDaysEditors().get(i).getName().equals(key)) {
                         member.getFourtyDaysEditors().get(i).setTime(editList.get(key));
+                        flag =true;
                     }
                     if(member.getFourtyDaysEditors().get(i).getTime().equals("0:0")){
                         member.getFourtyDaysEditors().remove(i);
