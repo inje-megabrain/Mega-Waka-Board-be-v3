@@ -2,6 +2,18 @@ package mega.waka.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import mega.waka.entity.editor.FourteenDaysEditor;
+import mega.waka.entity.editor.OneDaysEditor;
+import mega.waka.entity.editor.SevenDaysEditor;
+import mega.waka.entity.editor.ThirtyDaysEditor;
+import mega.waka.entity.language.FourteenDaysLanguage;
+import mega.waka.entity.language.OneDaysLanguage;
+import mega.waka.entity.language.SevenDaysLanguage;
+import mega.waka.entity.language.ThirtyDaysLanguage;
+import mega.waka.entity.project.FourteenDaysProject;
+import mega.waka.entity.project.OneDaysProject;
+import mega.waka.entity.project.SevenDaysProject;
+import mega.waka.entity.project.ThirtyDaysProject;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -20,16 +32,21 @@ public class Member {
     private UUID id;
     private String name;
     private String organization;
+    private String oneDay;
     private String sevenDays;
     private String fourteenDays;
-    private String secretKey;
     private String thirtyDays;
+    private String secretKey;
+    private String image;
+    private String department;
+
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    private List<Project> projects = new ArrayList<>();
+    private List<FourteenDaysProject> fourtyDaysProjects = new ArrayList<>();
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    private List<Language> languages = new ArrayList<>();
+    private List<FourteenDaysLanguage> fourtyDaysLanguages = new ArrayList<>();
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    private List<Editor> editors = new ArrayList<>();
+    private List<FourteenDaysEditor> fourtyDaysEditors = new ArrayList<>();
+
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<SevenDaysProject> sevenprojects = new ArrayList<>();
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
@@ -37,7 +54,20 @@ public class Member {
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<SevenDaysEditor> seveneditors = new ArrayList<>();
 
-    private LocalDateTime startDate; //1년 구분자
-    private LocalDateTime updateDate; //30일 구분
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private List<OneDaysEditor> oneDaysEditors = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private List<OneDaysProject> oneDaysProjects = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private List<OneDaysLanguage> oneDaysLanguages = new ArrayList<>();
 
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private List<ThirtyDaysEditor> thirtyDaysEditors = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private List<ThirtyDaysProject> thirtyDaysProjects = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private List<ThirtyDaysLanguage> thirtyDaysLanguages = new ArrayList<>();
+    @OneToOne
+    private Money money;
+    private LocalDateTime startDate;
 }

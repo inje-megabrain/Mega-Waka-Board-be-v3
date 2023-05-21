@@ -1,19 +1,19 @@
-package mega.waka.entity;
+package mega.waka.entity.editor;
 
 import jakarta.persistence.*;
 import lombok.*;
 
-@Setter
-@Getter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
-public class Editor {
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class SevenDaysEditor {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    @Column(name="editor_name")
     String name;
     String time;
 }

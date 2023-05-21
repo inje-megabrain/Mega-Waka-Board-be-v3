@@ -1,6 +1,6 @@
-package mega.waka.repository;
+package mega.waka.repository.editor;
 
-import mega.waka.entity.SevenDaysEditor;
+import mega.waka.entity.editor.SevenDaysEditor;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

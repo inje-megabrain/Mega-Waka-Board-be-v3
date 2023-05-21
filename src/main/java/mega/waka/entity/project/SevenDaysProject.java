@@ -1,4 +1,4 @@
-package mega.waka.entity;
+package mega.waka.entity.project;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,10 +12,12 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class SevenDaysLanguage {
+public class SevenDaysProject {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     String name;
     String time;
+
 }

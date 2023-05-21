@@ -2,7 +2,8 @@ package mega.waka.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.boot.autoconfigure.web.WebProperties;
+
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -10,11 +11,10 @@ import org.springframework.boot.autoconfigure.web.WebProperties;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Project {
+public class Money {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
-    @Column(name="project_name")
-    String name;
-    String time;
+    private Long id;
+    private int amount;
+    private LocalDate updateDate;
 }
