@@ -68,9 +68,8 @@ public class ThirtyDaysWakaService {
                 JSONParser parser = new JSONParser();
                 JSONObject jsonObject = (JSONObject) parser.parse(responseData);
                 JSONObject data = (JSONObject) jsonObject.get("data");
-                //System.out.println("data = " + data);
+
                 JSONArray categories = (JSONArray) data.get("categories");
-                System.out.println("categories = " + categories);
                 JSONObject index = (JSONObject) categories.get(0);
                 member.setThirtyDays(index.get("text").toString());
                 memberRepository.save(member);
