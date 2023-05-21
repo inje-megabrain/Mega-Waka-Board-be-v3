@@ -34,7 +34,7 @@ public class WakaController {
     @Operation(summary = "Create Member API", description = "name = 이름 정자 표기, organization = 메가브레인, 돗가비 정자 표기, apiKey = wakatime api key, githubId = github id, department = 백엔드 or 프론트엔드.. etc")
     public ResponseEntity createMember(@PathVariable String name, @RequestParam String organization, @RequestParam String apiKey, @RequestParam String github_Id, @RequestParam String department) {
         try{
-            if(Organization.Megabrain.equals(organization) || Organization.Dotgabi.equals(organization))
+            if(Organization.Megabrain.getName().equals(organization) || Organization.Dotgabi.getName().equals(organization))
                 memberService.add_Member_By_apiKey(name, organization, apiKey, github_Id,department);
             else return new ResponseEntity("organization은 메가브레인, 돗가비 중 하나여야 합니다.", HttpStatus.BAD_REQUEST);
             return new ResponseEntity("success", HttpStatus.OK);
