@@ -30,7 +30,7 @@ public class WakaController {
     }
 
     @PostMapping("/{name}")
-    @Operation(summary = "Create Member API", description = "새로운 멤버를 추가합니다. \n name = 이름 정자 표기 \n organization = 메가브레인, 돗가비 정자 표기,\n apiKey = wakatime api key, \n githubId = github id")
+    @Operation(summary = "Create Member API", description = "name = 이름 정자 표기, organization = 메가브레인, 돗가비 정자 표기, apiKey = wakatime api key, githubId = github id, department = 백엔드 or 프론트엔드.. etc")
     public ResponseEntity createMember(@PathVariable String name, @RequestParam String organization, @RequestParam String apiKey, @RequestParam String github_Id, @RequestParam String department) {
         try{
             memberService.add_Member_By_apiKey(name, organization, apiKey, github_Id,department);
@@ -49,17 +49,16 @@ public class WakaController {
         }
     }
     @GetMapping("/members/{id}")
-    @Operation(summary = "Get Member API", description = "멤버를 상세 조회합니다.")
+    @Operation(summary = "Get Member API", description = "멤버를 상세 조회합니다. date =7 or 30")
     public ResponseEntity getMember_Info(@PathVariable String id, @RequestParam int date){
         try{
-
             return new ResponseEntity(memberService.get_Member_info_day(UUID.fromString(id),date),HttpStatus.OK);
         }catch (RuntimeException e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
     @PostMapping("/members")
-    @Operation(summary = "수동 api 갱신 API", description = "코딩 시간을 수동 갱신합니다.")
+    @Operation(summary = "수동 api 갱신 API", description = "코딩 시간을 수동 갱신합니다. date = 1,7,14,30")
     public ResponseEntity getMemberTimeByApiKey(@RequestParam int date){
         try{
             if(date ==1) oneDaysWakaService.update_OneDays();

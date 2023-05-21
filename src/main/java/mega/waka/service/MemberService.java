@@ -5,6 +5,7 @@ import mega.waka.entity.Money;
 import mega.waka.entity.dto.ResponseInfoDto;
 import mega.waka.entity.dto.ResponseMemberDto;
 import mega.waka.repository.MemberRepository;
+import mega.waka.repository.MoneyRepository;
 import mega.waka.repository.language.OneDayLanguageRepository;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -26,10 +27,12 @@ import java.util.*;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final MoneyRepository moneyRepository;
 
     public MemberService(MemberRepository memberRepository,
-                         OneDayLanguageRepository oneDaysLanguageRepository) {
+                          MoneyRepository moneyRepository) {
         this.memberRepository = memberRepository;
+        this.moneyRepository = moneyRepository;
     }
     public List<ResponseMemberDto> memberList(){
        List<Member> findMembers = memberRepository.findAll();
@@ -115,6 +118,7 @@ public class MemberService {
     public void add_Member_By_apiKey(String name, String organization, String apiKey, String githubId,String department) {  // member 생성 api
         Member findMember = memberRepository.findByNameAndOrganization(name,organization);
         if(findMember ==null){
+            Money money = new Money().builder().amount(0).updateDate(LocalDate.now()).build();
             Member member = new Member();
             member.setSecretKey(apiKey);
             member.setName(name);
@@ -126,7 +130,8 @@ public class MemberService {
             member.setOrganization(organization);
             member.setStartDate(LocalDateTime.now());
             member.setDepartment(department);
-            member.setMoney(new Money().builder().amount(0).updateDate(LocalDate.now()).build());
+            member.setMoney(money);
+            moneyRepository.save(money);
             memberRepository.save(member);
         }
         else{
