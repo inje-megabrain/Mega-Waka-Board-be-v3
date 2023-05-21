@@ -54,10 +54,11 @@ public class SevenDaysWakaService {
         String responseData="";
         try {
             RestTemplate restTemplate = new RestTemplate();
-            String apiUrl = "https://wakatime.com/api/v1/users/current/stats/last_7_days";
+            String apiUrl = "https://wakatime.com/api/v1/users/current/summaries";
             for (Member member : members) {
 
-                UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(apiUrl);
+                UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(apiUrl)
+                        .queryParam("range", "last_7_days");
 
                 HttpHeaders headers = new HttpHeaders();
                 headers.setBasicAuth(member.getSecretKey(),"");
@@ -69,7 +70,6 @@ public class SevenDaysWakaService {
                         String.class
                 );
                 responseData = response.getBody();
-                System.out.println(responseData);
                 JSONParser parser = new JSONParser();
                 JSONObject jsonObject = (JSONObject) parser.parse(responseData);
                 JSONArray data = (JSONArray) jsonObject.get("data");
