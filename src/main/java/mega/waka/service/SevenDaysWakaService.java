@@ -54,11 +54,10 @@ public class SevenDaysWakaService {
         String responseData="";
         try {
             RestTemplate restTemplate = new RestTemplate();
-            String apiUrl = "https://wakatime.com/api/v1/users/current/summaries";
+            String apiUrl = "https://wakatime.com/api/v1/users/stats/last_7_days";
             for (Member member : members) {
 
-                UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(apiUrl)
-                        .queryParam("range", "last_7_days");
+                UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(apiUrl);
 
                 HttpHeaders headers = new HttpHeaders();
                 headers.setBasicAuth(member.getSecretKey(),"");
@@ -72,22 +71,23 @@ public class SevenDaysWakaService {
                 responseData = response.getBody();
                 JSONParser parser = new JSONParser();
                 JSONObject jsonObject = (JSONObject) parser.parse(responseData);
-                JSONArray data = (JSONArray) jsonObject.get("data");
-                JSONObject total = (JSONObject) jsonObject.get("cumulative_total");
-                member.setSevenDays(total.get("text").toString());
+                JSONObject data = (JSONObject) jsonObject.get("data");
+                //System.out.println("data = " + data);
+                JSONArray categories = (JSONArray) data.get("categories");
+                System.out.println("categories = " + categories);
+                JSONObject index = (JSONObject) categories.get(0);
+                member.setSevenDays(index.get("text").toString());
+                memberRepository.save(member);
 
-                for(int i=0;i<data.size();i++){
-                    JSONObject obj = (JSONObject) data.get(i);
-                    JSONArray languages = (JSONArray) obj.get("languages");
-                    JSONArray editors = (JSONArray) obj.get("editors");
-                    JSONArray projects = (JSONArray) obj.get("projects");
+                JSONArray languages = (JSONArray) data.get("languages");
+                JSONArray editors = (JSONArray) data.get("editors");
+                JSONArray projects = (JSONArray) data.get("projects");
 
-                    if(languages.isEmpty() || editors.isEmpty() || projects.isEmpty()) continue;
-                    else {
-                        set_Language(languages);
-                        set_Project(projects);
-                        set_Editor(editors);
-                    }
+                if(languages.isEmpty() || editors.isEmpty() || projects.isEmpty()) continue;
+                else {
+                    set_Language(languages);
+                    set_Project(projects);
+                    set_Editor(editors);
                 }
                 set_Member_By_Language(member);
                 set_Member_By_Editor(member);
