@@ -66,7 +66,7 @@ public class FourteenDaysWakaService {
 
                 member.setFourteenDays(total.get("text").toString());
                 memberRepository.save(member);
-                for(int i=0;i<data.size();i++){
+                /*for(int i=0;i<data.size();i++){
                     JSONObject obj = (JSONObject) data.get(i);
                     JSONArray languages = (JSONArray) obj.get("languages");
                     JSONArray editors = (JSONArray) obj.get("editors");
@@ -84,7 +84,7 @@ public class FourteenDaysWakaService {
                 set_Member_By_Project(member);
                 editList.clear();
                 languageList.clear();
-                projectList.clear();
+                projectList.clear();*/
             }
 
         } catch (Exception e) {
