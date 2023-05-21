@@ -83,7 +83,7 @@ public class SevenDaysWakaService {
                 JSONArray languages = (JSONArray) data.get("languages");
                 JSONArray editors = (JSONArray) data.get("editors");
                 JSONArray projects = (JSONArray) data.get("projects");
-                
+
                 set_Member_By_Language(member,languages);
                 set_Member_By_Editor(member,editors);
                 set_Member_By_Project(member,projects);
@@ -294,7 +294,7 @@ public class SevenDaysWakaService {
     }
     private void set_Member_By_Editor(Member member,JSONArray editors) {
         if (member.getSeveneditors().size() == 0) {
-            for (int i=0;i<editors.size();i++) {
+            for (int i = 0; i < editors.size(); i++) {
                 JSONObject obj = (JSONObject) editors.get(i);
                 JSONObject name = (JSONObject) obj.get("name");
                 JSONObject hour = (JSONObject) obj.get("hours");
@@ -313,7 +313,7 @@ public class SevenDaysWakaService {
                 boolean flag = false;
                 String name = "";
                 String time = "";
-                for (int j=0;j<editors.size();j++) {
+                for (int j = 0; j < editors.size(); j++) {
                     JSONObject obj = (JSONObject) editors.get(i);
                     JSONObject names = (JSONObject) obj.get("name");
                     JSONObject hour = (JSONObject) obj.get("hours");
@@ -324,7 +324,7 @@ public class SevenDaysWakaService {
                         member.getSeveneditors().get(i).setTime(time);
                         flag = true;
                     }
-                    if(member.getSeveneditors().get(i).getTime().equals("0:0")){
+                    if (member.getSeveneditors().get(i).getTime().equals("0:0")) {
                         member.getSeveneditors().remove(i);
                     }
                 }
@@ -339,4 +339,5 @@ public class SevenDaysWakaService {
                 }
             }
         }
+    }
 }
