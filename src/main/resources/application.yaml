@@ -4,3 +4,6 @@ spring:
       - application-mysql.yaml
       - application-jasypt.yaml
       - application-apidoc.yaml
+      - application-redis.yaml
+  main:
+    allow-bean-definition-overriding: true
