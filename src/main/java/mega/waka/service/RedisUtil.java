@@ -63,7 +63,14 @@ public class RedisUtil {
             return new IllegalArgumentException("해당 유저가 없습니다.");
         });
         ValueOperations<String,SevenDaysResultHistory> values = redisTemplate.opsForValue();
-        return Optional.ofNullable(values.get(member.get().getName()));
+        if(values.get(member.get().getName()) == null) {
+            SevenDaysResultHistory sevenDaysResultHistory = new SevenDaysResultHistory();
+            sevenDaysResultHistory.setSevenDaysLanguages(member.get().getSevenlanguages());
+            sevenDaysResultHistory.setSevenDaysEditors(member.get().getSeveneditors());
+            sevenDaysResultHistory.setSevenDaysProjects(member.get().getSevenprojects());
+            sevenDaysResultHistory.setId(String.valueOf(member.get().getId()));
+            return Optional.ofNullable(sevenDaysResultHistory);
+        }else return Optional.ofNullable(values.get(member.get().getName()));
 
     }
     public Optional<ThirtyDaysResultHistory> get_Redis_ThirtyDays(UUID id){
@@ -72,7 +79,14 @@ public class RedisUtil {
             return new IllegalArgumentException("해당 유저가 없습니다.");
         });
         ValueOperations<String,ThirtyDaysResultHistory> valueOperations = redisTemplateThirtyDays.opsForValue();
-        return Optional.ofNullable(valueOperations.get(member.get().getName()));
+        if(valueOperations.get(member.get().getName()) == null){
+            ThirtyDaysResultHistory thirtyDaysResultHistory = new ThirtyDaysResultHistory();
+            thirtyDaysResultHistory.setThirtyDaysEditors(member.get().getThirtyDaysEditors());
+            thirtyDaysResultHistory.setThirtyDaysProjects(member.get().getThirtyDaysProjects());
+            thirtyDaysResultHistory.setThirtyDaysLanguages(member.get().getThirtyDaysLanguages());
+            thirtyDaysResultHistory.setId(String.valueOf(member.get().getId()));
+            return Optional.ofNullable(thirtyDaysResultHistory);
+        }else return Optional.ofNullable(valueOperations.get(member.get().getName()));
     }
 
 }
