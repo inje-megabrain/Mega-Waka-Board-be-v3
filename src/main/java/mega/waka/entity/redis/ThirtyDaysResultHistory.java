@@ -1,9 +1,6 @@
 package mega.waka.entity.redis;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import mega.waka.entity.editor.ThirtyDaysEditor;
 import mega.waka.entity.language.ThirtyDaysLanguage;
 import mega.waka.entity.project.ThirtyDaysProject;
@@ -18,8 +15,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@RedisHash(value = "thirtyDaysResultHistory") //redis repository에 저장될 객체임을 명시
-@Builder
+@Setter
 public class ThirtyDaysResultHistory {
     @Id
     private String id;

@@ -1,20 +1,15 @@
 package mega.waka.service;
 
 import mega.waka.entity.Member;
-import mega.waka.entity.dto.ResponseInfoDto;
-import mega.waka.entity.dto.ResponseInfoThirtyDaysDto;
 import mega.waka.entity.redis.SevenDaysResultHistory;
 import mega.waka.entity.redis.ThirtyDaysResultHistory;
 import mega.waka.repository.MemberRepository;
 
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
-import org.springframework.data.redis.core.ZSetOperations;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
-import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -36,29 +31,27 @@ public class RedisUtil {
     public void save_Redis_SevenDays() {
         List<Member> members = memberRepository.findAll();
         for(Member member : members){
-            SevenDaysResultHistory sevenDaysResultHistory = new SevenDaysResultHistory().builder()
-                    .sevenDaysEditors(member.getSeveneditors())
-                    .sevenDaysProjects(member.getSevenprojects())
-                    .sevenDaysLanguages(member.getSevenlanguages())
-                    .id(String.valueOf(member.getId()))
-                    .build();
-            //redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(Object.class));
+            SevenDaysResultHistory sevenDaysResultHistory = new SevenDaysResultHistory();
+            sevenDaysResultHistory.setSevenDaysEditors(member.getSeveneditors());
+            sevenDaysResultHistory.setSevenDaysProjects(member.getSevenprojects());
+            sevenDaysResultHistory.setSevenDaysLanguages(member.getSevenlanguages());
+            sevenDaysResultHistory.setId(String.valueOf(member.getId()));
+
             ValueOperations<String,SevenDaysResultHistory> valueOperations = redisTemplate.opsForValue();
             Duration expiration = Duration.ofMinutes(10);
             valueOperations.set(member.getName(),sevenDaysResultHistory,expiration);
-            System.out.println(" = " + valueOperations.get(member.getName()));
         }
 
     }
     public void save_Redis_ThirtyDays(){
         List<Member> members = memberRepository.findAll();
         for(Member member : members){
-            ThirtyDaysResultHistory thirtyDaysResultHistory = new ThirtyDaysResultHistory().builder()
-                    .thirtyDaysEditors(member.getThirtyDaysEditors())
-                    .thirtyDaysProjects(member.getThirtyDaysProjects())
-                    .thirtyDaysLanguages(member.getThirtyDaysLanguages())
-                    .id(String.valueOf(member.getId()))
-                    .build();
+            ThirtyDaysResultHistory thirtyDaysResultHistory = new ThirtyDaysResultHistory();
+            thirtyDaysResultHistory.setThirtyDaysEditors(member.getThirtyDaysEditors());
+            thirtyDaysResultHistory.setThirtyDaysProjects(member.getThirtyDaysProjects());
+            thirtyDaysResultHistory.setThirtyDaysLanguages(member.getThirtyDaysLanguages());
+            thirtyDaysResultHistory.setId(String.valueOf(member.getId()));
+
             ValueOperations<String,ThirtyDaysResultHistory> valueOperations = redisTemplateThirtyDays.opsForValue();
             Duration expiration = Duration.ofMinutes(10);
             valueOperations.set(member.getName(),thirtyDaysResultHistory,expiration);
