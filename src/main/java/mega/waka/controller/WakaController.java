@@ -78,11 +78,11 @@ public class WakaController {
             if(date ==1) oneDaysWakaService.update_OneDays();
             else if(date ==30) {
                 thirtyDaysWakaService.update_ThirtyDays();
-                redisUtil.save_Redis_ThirtyDays();
+                //redisUtil.save_Redis_ThirtyDays();
             }
             else if(date ==7) {
                 sevenDaysWakaService.update_SevenDays();
-                redisUtil.save_Redis_SevenDays();
+                //redisUtil.save_Redis_SevenDays();
             }
             else if(date ==14) wakaTimeService.update_FourtyDays();
             else return new ResponseEntity("date는 1, 7, 14, 30 중 하나여야 합니다.", HttpStatus.BAD_REQUEST);
