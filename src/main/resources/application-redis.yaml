@@ -1,0 +1,6 @@
+spring:
+  type: redis
+  cache:
+    redis:
+      host: localhost
+      port: ENC(peyOY64ATp+mL7T+rZ0EOA==)

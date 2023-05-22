@@ -10,6 +10,7 @@ import mega.waka.entity.language.SevenDaysLanguage;
 import mega.waka.entity.language.ThirtyDaysLanguage;
 import mega.waka.entity.project.SevenDaysProject;
 import mega.waka.entity.project.ThirtyDaysProject;
+import org.springframework.data.redis.core.RedisHash;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+
 public class ResponseInfoThirtyDaysDto {
 
     private String name;

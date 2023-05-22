@@ -74,7 +74,6 @@ public class SevenDaysWakaService {
                 JSONParser parser = new JSONParser();
                 JSONObject jsonObject = (JSONObject) parser.parse(responseData);
                 JSONObject data = (JSONObject) jsonObject.get("data");
-
                 JSONArray categories = (JSONArray) data.get("categories");
                 JSONObject index = (JSONObject) categories.get(0);
                 member.setSevenDays(index.get("text").toString());

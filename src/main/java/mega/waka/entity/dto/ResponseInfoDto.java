@@ -8,6 +8,7 @@ import mega.waka.entity.editor.SevenDaysEditor;
 import mega.waka.entity.language.SevenDaysLanguage;
 import mega.waka.entity.project.SevenDaysProject;
 import org.json.simple.JSONArray;
+import org.springframework.data.redis.core.RedisHash;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+
 public class ResponseInfoDto {
     private String name;
     private List<SevenDaysEditor> Editors = new ArrayList<>();

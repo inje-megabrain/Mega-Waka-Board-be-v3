@@ -75,7 +75,7 @@ public class OneDaysWakaService {
                 member.setOneDay(operating_systems.get("text").toString());
                 memberRepository.save(member);
 
-                JSONArray languages = (JSONArray) data.get("languages");
+                /*JSONArray languages = (JSONArray) data.get("languages");
                 JSONArray editors = (JSONArray) data.get("editors");
                 JSONArray projects = (JSONArray) data.get("projects");
 
@@ -91,7 +91,7 @@ public class OneDaysWakaService {
                 set_Member_By_Project(member);
                 editList.clear();
                 languageList.clear();
-                projectList.clear();
+                projectList.clear();*/
             }
         } catch (ParseException e) {
             throw new RuntimeException(e);

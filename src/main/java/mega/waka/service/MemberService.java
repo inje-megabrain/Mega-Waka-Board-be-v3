@@ -21,10 +21,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -54,6 +51,24 @@ public class MemberService {
         this.sevenDaysLanguageRepository = sevenDaysLanguageRepository;
         this.sevendaysProjectRepository = sevendaysProjectRepository;
         this.sevenDaysEditorRepository = sevenDaysEditorRepository;
+    }
+    public String Authentication_apiKey(String apiKey){
+        RestTemplate restTemplate = new RestTemplate();
+        String apiUrl ="https://wakatime.com/api/v1/users/current";
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(apiUrl);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBasicAuth(apiKey,"");
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                builder.toUriString(),
+                HttpMethod.GET,
+                new HttpEntity<>(headers),
+                String.class
+        );
+        String responseData = response.getBody();
+        if(responseData.isBlank()) return "";
+        else return "200";
     }
     public List<ResponseMemberDto> memberList(){
        List<Member> findMembers = memberRepository.findAll();
@@ -179,55 +194,7 @@ public class MemberService {
         }
     }
 
-    private void set_Member_By_Language(Member member, JSONArray languages) {
-        System.out.println("languages = " + languages);
-        if (member.getSevenlanguages().size() == 0) {
-            for (int i=0;i<languages.size();i++) {
-                JSONObject obj = (JSONObject) languages.get(i);
-                JSONObject name = (JSONObject) obj.get("name");
-                JSONObject hour = (JSONObject) obj.get("hours");
-                JSONObject min = (JSONObject) obj.get("minutes");
-                String time = hour.get("text").toString() + ":" + min.get("text").toString();
-                SevenDaysLanguage language = new SevenDaysLanguage().builder()
-                        .name(name.toString())
-                        .time(time)
-                        .build();
-                sevenDaysLanguageRepository.save(language);
-                member.getSevenlanguages().add(language);
-                memberRepository.save(member);
-            }
-        } else {
-            for (int i = 0; i < member.getSevenlanguages().size(); i++) {
-                boolean flag = false;
-                String name = "";
-                String time = "";
-                for (int j=0;j<languages.size();j++) {
-                    JSONObject obj = (JSONObject) languages.get(j);
-                    System.out.println(obj);
-                    JSONObject names = (JSONObject) obj.get("name");
-                    JSONObject hour = (JSONObject) obj.get("hours");
-                    JSONObject min = (JSONObject) obj.get("minutes");
-                    time = hour.get("text").toString() + ":" + min.get("text").toString();
-                    if (member.getSevenlanguages().get(i).getName().equals(names.toString())) {
-                        member.getSevenlanguages().get(i).setTime(time);
-                        flag = true;
-                    }
-                    if(member.getSevenlanguages().get(i).getTime().equals("0:0")){
-                        member.getSevenlanguages().remove(i);
-                    }
-                }
-                if (flag == false) {
-                    SevenDaysLanguage language = new SevenDaysLanguage().builder()
-                            .name(name)
-                            .time(time)
-                            .build();
-                    sevenDaysLanguageRepository.save(language);
-                    member.getSevenlanguages().add(language);
-                    memberRepository.save(member);
-                }
-            }
-        }
-    }
+
     private Map<String,String> set_Language(JSONArray languages){
         for(int j=0;j<languages.size();j++) {
             JSONObject index = (JSONObject) languages.get(j);
