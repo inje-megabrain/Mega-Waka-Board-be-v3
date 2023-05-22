@@ -61,10 +61,10 @@ public class WakaController {
     public ResponseEntity getMember_Info(@PathVariable String id, @RequestParam int date){
         try{
             if(date==7){
-                return new ResponseEntity(redisUtil.get_Redis_SevenDays(UUID.fromString(id)),HttpStatus.OK);
+                return new ResponseEntity(memberService.get_Member_info_day(UUID.fromString(id)),HttpStatus.OK);
             }
             else if(date ==30) {
-                return new ResponseEntity(redisUtil.get_Redis_ThirtyDays(UUID.fromString(id)),HttpStatus.OK);
+                return new ResponseEntity(memberService.get_Member_info_ThirtyDays(UUID.fromString(id)),HttpStatus.OK);
             }
             else return new ResponseEntity("7 or 30 중 하나를 입력해야 됩니다.",HttpStatus.BAD_REQUEST);
         }catch (RuntimeException e){
