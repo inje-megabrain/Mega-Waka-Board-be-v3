@@ -3,13 +3,10 @@ package mega.waka.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import mega.waka.entity.dto.Organization;
 import mega.waka.service.*;
-import org.json.simple.JSONArray;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -20,24 +17,32 @@ public class WakaController {
     private final OneDaysWakaService oneDaysWakaService;
     private final SevenDaysWakaService sevenDaysWakaService;
     private final ThirtyDaysWakaService thirtyDaysWakaService;
+    private final RedisUtil redisUtil;
     private final MemberService memberService;
 
-    public WakaController(FourteenDaysWakaService fourtyDaysWakaService, OneDaysWakaService oneDaysWakaService, SevenDaysWakaService sevenDaysWakaService, ThirtyDaysWakaService thirtyDaysWakaService, MemberService memberService) {
+    public WakaController(FourteenDaysWakaService fourtyDaysWakaService, OneDaysWakaService oneDaysWakaService, SevenDaysWakaService sevenDaysWakaService, ThirtyDaysWakaService thirtyDaysWakaService, RedisUtil redisUtil, MemberService memberService) {
         this.wakaTimeService = fourtyDaysWakaService;
         this.oneDaysWakaService = oneDaysWakaService;
         this.sevenDaysWakaService = sevenDaysWakaService;
         this.thirtyDaysWakaService = thirtyDaysWakaService;
+        this.redisUtil = redisUtil;
         this.memberService = memberService;
     }
 
-    @PostMapping("/{name}")
+    @PostMapping("/{github_Id}")
     @Operation(summary = "Create Member API", description = "name = 이름 정자 표기, organization = 메가브레인, 돗가비 정자 표기, apiKey = wakatime api key, githubId = github id, department = 백엔드 or 프론트엔드.. etc")
-    public ResponseEntity createMember(@PathVariable String name, @RequestParam String organization, @RequestParam String apiKey, @RequestParam String github_Id, @RequestParam String department) {
+    public ResponseEntity createMember(@RequestParam String name, @RequestParam String organization, @RequestParam String apiKey, @PathVariable String github_Id, @RequestParam String department) {
         try{
-            if(Organization.Megabrain.getName().equals(organization) || Organization.Dotgabi.getName().equals(organization))
-                memberService.add_Member_By_apiKey(name, organization, apiKey, github_Id,department);
+            if(Organization.Megabrain.getName().equals(organization) || Organization.Dotgabi.getName().equals(organization)){
+                if(memberService.Authentication_apiKey(apiKey).equals("200")){
+                    memberService.add_Member_By_apiKey(name, organization, apiKey, github_Id,department);
+                    return new ResponseEntity("success", HttpStatus.OK);
+                }
+                else return new ResponseEntity("apiKey가 올바르지 않습니다.",HttpStatus.BAD_REQUEST);
+
+            }
+
             else return new ResponseEntity("organization은 메가브레인, 돗가비 중 하나여야 합니다.", HttpStatus.BAD_REQUEST);
-            return new ResponseEntity("success", HttpStatus.OK);
         }catch (RuntimeException e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -52,11 +57,15 @@ public class WakaController {
         }
     }
     @GetMapping("/members/{id}")
-    @Operation(summary = "Get Member API", description = "멤버를 상세 조회합니다. date =7 or 30")
+    @Operation(summary = "멤버 상세 조회 API", description = "멤버를 상세 조회합니다. date =7 or 30")
     public ResponseEntity getMember_Info(@PathVariable String id, @RequestParam int date){
         try{
-            if(date==7)return new ResponseEntity(memberService.get_Member_info_day(UUID.fromString(id)),HttpStatus.OK);
-            else return new ResponseEntity(memberService.get_Member_info_ThirtyDays(UUID.fromString(id)),HttpStatus.OK);
+            if(date==7){
+                return new ResponseEntity(redisUtil.get_Redis_SevenDays(UUID.fromString(id)),HttpStatus.OK);
+            }
+            else {
+                return new ResponseEntity(redisUtil.get_Redis_ThirtyDays(UUID.fromString(id)),HttpStatus.OK);
+            }
         }catch (RuntimeException e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -66,13 +75,19 @@ public class WakaController {
     public ResponseEntity getMemberTimeByApiKey(@RequestParam int date){
         try{
             if(date ==1) oneDaysWakaService.update_OneDays();
-            else if(date ==30) thirtyDaysWakaService.update_ThirtyDays();
-            else if(date ==7) sevenDaysWakaService.update_SevenDays();
+            else if(date ==30) {
+                thirtyDaysWakaService.update_ThirtyDays();
+                redisUtil.save_Redis_ThirtyDays();
+            }
+            else if(date ==7) {
+                sevenDaysWakaService.update_SevenDays();
+                redisUtil.save_Redis_SevenDays();
+            }
             else if(date ==14) wakaTimeService.update_FourtyDays();
             else return new ResponseEntity("date는 1, 7, 14, 30 중 하나여야 합니다.", HttpStatus.BAD_REQUEST);
             return new ResponseEntity("susccess", HttpStatus.OK);
         }catch (RuntimeException e){
-            return new ResponseEntity(e.fillInStackTrace(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
     @PostMapping("/members/{id}")
@@ -83,7 +98,7 @@ public class WakaController {
             memberService.update_apiKey(uuid, apiKey);
             return new ResponseEntity("success", HttpStatus.OK);
         }catch (RuntimeException e){
-            return new ResponseEntity(e.fillInStackTrace(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
     @DeleteMapping("/members/{id}")
@@ -93,7 +108,7 @@ public class WakaController {
             memberService.delete_member(UUID.fromString(id));
             return new ResponseEntity("해당 멤버가 삭제되었습니다.", HttpStatus.OK);
         }catch (RuntimeException e){
-            return new ResponseEntity(e.fillInStackTrace(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 }
