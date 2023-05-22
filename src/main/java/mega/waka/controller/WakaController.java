@@ -63,9 +63,10 @@ public class WakaController {
             if(date==7){
                 return new ResponseEntity(redisUtil.get_Redis_SevenDays(UUID.fromString(id)),HttpStatus.OK);
             }
-            else {
+            else if(date ==30) {
                 return new ResponseEntity(redisUtil.get_Redis_ThirtyDays(UUID.fromString(id)),HttpStatus.OK);
             }
+            else return new ResponseEntity("7 or 30 중 하나를 입력해야 됩니다.",HttpStatus.BAD_REQUEST);
         }catch (RuntimeException e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }

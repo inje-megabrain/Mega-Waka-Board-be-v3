@@ -5,13 +5,8 @@ import mega.waka.entity.editor.SevenDaysEditor;
 import mega.waka.entity.language.SevenDaysLanguage;
 import mega.waka.entity.project.SevenDaysProject;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.redis.core.RedisHash;
-import org.springframework.data.redis.core.TimeToLive;
-import org.springframework.data.redis.core.index.Indexed;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 @Getter
 @Setter

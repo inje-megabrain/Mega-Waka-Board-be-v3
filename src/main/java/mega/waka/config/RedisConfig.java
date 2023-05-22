@@ -4,10 +4,13 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import mega.waka.entity.redis.SevenDaysResultHistory;
 import mega.waka.entity.redis.ThirtyDaysResultHistory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
@@ -25,11 +28,28 @@ public class RedisConfig {
     private int port;
 
     @Bean
+    @Primary
     public RedisConnectionFactory redisConnectionFactory() { // 내장 혹은 외부의 Redis를 연결
-        return new LettuceConnectionFactory(host, port);
+        final RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
+        redisStandaloneConfiguration.setDatabase(0);
+        redisStandaloneConfiguration.setHostName(host);
+        redisStandaloneConfiguration.setPort(port);
+        return new LettuceConnectionFactory(redisStandaloneConfiguration);
     }
 
     @Bean
+    @Primary
+    public RedisConnectionFactory connectionFactory() {
+        final RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
+        redisStandaloneConfiguration.setDatabase(2);
+        redisStandaloneConfiguration.setHostName(host);
+        redisStandaloneConfiguration.setPort(port);
+        return new LettuceConnectionFactory(redisStandaloneConfiguration);
+    }
+
+    @Bean
+    @Qualifier("redisTemplate")
+
     public RedisTemplate<String, SevenDaysResultHistory> redisTemplate() { // RedisTemplate을 Bean으로 등록
         RedisTemplate<String, SevenDaysResultHistory> redisTemplate = new RedisTemplate<>();
         redisTemplate.setKeySerializer(new StringRedisSerializer());
@@ -41,13 +61,14 @@ public class RedisConfig {
     }
 
     @Bean
+    @Qualifier("redisTemplateThirtyDays")
     public RedisTemplate<String, ThirtyDaysResultHistory> redisTemplateThirtyDays() { // RedisTemplate을 Bean으로 등록
-        RedisTemplate<String, ThirtyDaysResultHistory> redisTemplate = new RedisTemplate<>();
-        redisTemplate.setKeySerializer(new StringRedisSerializer());
-        redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(ThirtyDaysResultHistory.class));
-        redisTemplate.setHashKeySerializer(new StringRedisSerializer());
-        redisTemplate.setHashValueSerializer(new Jackson2JsonRedisSerializer<>(ThirtyDaysResultHistory.class));
-        redisTemplate.setConnectionFactory(redisConnectionFactory());
-        return redisTemplate;
+        RedisTemplate<String, ThirtyDaysResultHistory> redisTemplateThirtyDays = new RedisTemplate<>();
+        redisTemplateThirtyDays.setKeySerializer(new StringRedisSerializer());
+        redisTemplateThirtyDays.setValueSerializer(new Jackson2JsonRedisSerializer<>(ThirtyDaysResultHistory.class));
+        redisTemplateThirtyDays.setHashKeySerializer(new StringRedisSerializer());
+        redisTemplateThirtyDays.setHashValueSerializer(new Jackson2JsonRedisSerializer<>(ThirtyDaysResultHistory.class));
+        redisTemplateThirtyDays.setConnectionFactory(connectionFactory());
+        return redisTemplateThirtyDays;
     }
 }

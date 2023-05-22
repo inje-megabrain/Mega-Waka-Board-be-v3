@@ -37,9 +37,9 @@ public class RedisUtil {
             sevenDaysResultHistory.setSevenDaysLanguages(member.getSevenlanguages());
             sevenDaysResultHistory.setId(String.valueOf(member.getId()));
 
-            ValueOperations<String,SevenDaysResultHistory> valueOperations = redisTemplate.opsForValue();
+            ValueOperations<String,SevenDaysResultHistory> values = redisTemplate.opsForValue();
             Duration expiration = Duration.ofMinutes(10);
-            valueOperations.set(member.getName(),sevenDaysResultHistory,expiration);
+            values.set(member.getName(),sevenDaysResultHistory,expiration);
         }
 
     }
@@ -55,7 +55,6 @@ public class RedisUtil {
             ValueOperations<String,ThirtyDaysResultHistory> valueOperations = redisTemplateThirtyDays.opsForValue();
             Duration expiration = Duration.ofMinutes(10);
             valueOperations.set(member.getName(),thirtyDaysResultHistory,expiration);
-            System.out.println("valueOperations.get() = " + valueOperations.get(member.getName()));
         }
     }
     public Optional<SevenDaysResultHistory> get_Redis_SevenDays(UUID id){
@@ -63,8 +62,8 @@ public class RedisUtil {
         member.orElseThrow(()->{
             return new IllegalArgumentException("해당 유저가 없습니다.");
         });
-        ValueOperations<String,SevenDaysResultHistory> valueOperations = redisTemplate.opsForValue();
-        return Optional.ofNullable(valueOperations.get(member.get().getName()));
+        ValueOperations<String,SevenDaysResultHistory> values = redisTemplate.opsForValue();
+        return Optional.ofNullable(values.get(member.get().getName()));
 
     }
     public Optional<ThirtyDaysResultHistory> get_Redis_ThirtyDays(UUID id){
