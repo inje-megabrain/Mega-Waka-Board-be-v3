@@ -146,6 +146,8 @@ public class MemberService {
                 .Languages(findMember.get().getSevenlanguages())
                 .Editors(findMember.get().getSeveneditors())
                 .Proejects(findMember.get().getSevenprojects())
+                    .money(findMember.get().getMoney())
+                    .oranization(findMember.get().getOrganization())
                 .build();
         } catch (ParseException e) {
             throw new RuntimeException(e);
@@ -163,6 +165,8 @@ public class MemberService {
                 .Editors(findMember.get().getThirtyDaysEditors())
                 .Languages(findMember.get().getThirtyDaysLanguages())
                 .Proejects(findMember.get().getThirtyDaysProjects())
+                .money(findMember.get().getMoney())
+                .oranization(findMember.get().getOrganization())
                 .build();
         return dto;
     }

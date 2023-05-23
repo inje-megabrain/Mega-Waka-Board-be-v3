@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import mega.waka.entity.Money;
 import mega.waka.entity.editor.SevenDaysEditor;
 import mega.waka.entity.editor.ThirtyDaysEditor;
 import mega.waka.entity.language.SevenDaysLanguage;
@@ -26,4 +27,6 @@ public class ResponseInfoThirtyDaysDto {
     private List<ThirtyDaysEditor> Editors = new ArrayList<>();
     private List<ThirtyDaysLanguage> Languages = new ArrayList<>();
     private List<ThirtyDaysProject> Proejects = new ArrayList<>();
+    private String oranization;
+    private Money money;
 }
