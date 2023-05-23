@@ -132,7 +132,7 @@ public class MemberService {
             JSONArray editors = (JSONArray) data.get("editors");
             JSONArray projects = (JSONArray) data.get("projects");
 
-            if(!languages.isEmpty() || !editors.isEmpty() || !projects.isEmpty()){
+            if(!languages.isEmpty() || !editors.isEmpty() || !projects.isEmpty() || languages!=null || editors!=null || projects!=null){
                 set_Language(languages);
                 set_Project(projects);
                 set_Editor(editors);
