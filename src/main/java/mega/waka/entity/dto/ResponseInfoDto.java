@@ -21,9 +21,10 @@ import java.util.List;
 
 public class ResponseInfoDto {
     private String name;
-    private List<SevenDaysEditor> Editors = new ArrayList<>();
-    private List<SevenDaysLanguage> Languages = new ArrayList<>();
-    private List<SevenDaysProject> Proejects = new ArrayList<>();
+    private List<SevenDaysEditor> totalEditors = new ArrayList<>();
+    private List<SevenDaysLanguage> totalLanguages = new ArrayList<>();
+    private List<SevenDaysProject> totalProejects = new ArrayList<>();
     private String oranization;
     private Money money;
+    private String imageURL;
 }

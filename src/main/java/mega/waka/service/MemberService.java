@@ -5,8 +5,12 @@ import mega.waka.entity.Money;
 import mega.waka.entity.dto.ResponseInfoDto;
 import mega.waka.entity.dto.ResponseInfoThirtyDaysDto;
 import mega.waka.entity.dto.ResponseMemberDto;
+import mega.waka.entity.dto.ResponseSummariesDto;
+import mega.waka.entity.editor.OneDaysEditor;
 import mega.waka.entity.editor.SevenDaysEditor;
+import mega.waka.entity.language.OneDaysLanguage;
 import mega.waka.entity.language.SevenDaysLanguage;
+import mega.waka.entity.project.OneDaysProject;
 import mega.waka.entity.project.SevenDaysProject;
 import mega.waka.repository.MemberRepository;
 import mega.waka.repository.MoneyRepository;
@@ -92,7 +96,10 @@ public class MemberService {
         member.orElseThrow(()->{
             throw new IllegalArgumentException("해당하는 멤버가 없습니다.");
         });
+        Optional<Money> money = moneyRepository.findById(member.get().getMoney().getId());
+        System.out.println("money.get().getId() = " + money.get().getId());
         memberRepository.delete(member.get());
+        moneyRepository.delete(money.get());
     }
     public void update_apiKey(UUID id, String apiKey) {  // apiKey 변경 api
         Optional<Member> member = memberRepository.findById(id);
@@ -101,6 +108,51 @@ public class MemberService {
         });
         member.get().setSecretKey(apiKey);
         memberRepository.save(member.get());
+    }
+
+    public Map<String,ResponseSummariesDto> get_totals_Member(UUID id){
+        Optional<Member> findMember = memberRepository.findById(id);
+        findMember.orElseThrow(()->{
+            throw new IllegalArgumentException("해당하는 멤버가 없습니다.");
+        });
+        Map<String,ResponseSummariesDto> map = new HashMap<>();
+        String responseData="";
+        try{
+            RestTemplate restTemplate = new RestTemplate();
+            String apiUrl ="https://wakatime.com/api/v1/users/current/summaries?range=last_7_days";
+            UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(apiUrl);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setBasicAuth(findMember.get().getSecretKey(),"");
+
+            ResponseEntity<String> response = restTemplate.exchange(
+                    builder.toUriString(),
+                    HttpMethod.GET,
+                    new HttpEntity<>(headers),
+                    String.class
+            );
+            responseData = response.getBody();
+            JSONParser parser = new JSONParser();
+            JSONObject jsonObject = (JSONObject) parser.parse(responseData);
+            JSONArray data = (JSONArray) jsonObject.get("data");
+            for(int i=0;i<data.size();i++){
+                JSONObject object = (JSONObject) data.get(i);
+                JSONObject range = (JSONObject) object.get("range");
+                String date = range.get("date").toString();
+                JSONArray languages = (JSONArray) object.get("languages");
+                JSONArray projects = (JSONArray) object.get("projects");
+                JSONArray editors = (JSONArray) object.get("editors");
+                ResponseSummariesDto dto = new ResponseSummariesDto().builder()
+                        .summariesEditors(editors)
+                        .summariesLanguages(languages)
+                        .summariesProjects(projects)
+                        .build();
+                map.put(date,dto);
+            }
+        }catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        return map;
     }
     public ResponseInfoDto get_Member_info_day(UUID id){
         Optional<Member> findMember = memberRepository.findById(id);
@@ -143,11 +195,12 @@ public class MemberService {
 
             responseInfoDto = new ResponseInfoDto().builder()
                 .name(findMember.get().getName())
-                .Languages(findMember.get().getSevenlanguages())
-                .Editors(findMember.get().getSeveneditors())
-                .Proejects(findMember.get().getSevenprojects())
+                .totalLanguages(findMember.get().getSevenlanguages())
+                .totalEditors(findMember.get().getSeveneditors())
+                .totalProejects(findMember.get().getSevenprojects())
                     .money(findMember.get().getMoney())
                     .oranization(findMember.get().getOrganization())
+                    .imageURL(findMember.get().getImage())
                 .build();
         } catch (ParseException e) {
             throw new RuntimeException(e);
@@ -162,11 +215,12 @@ public class MemberService {
         });
         ResponseInfoThirtyDaysDto dto = new ResponseInfoThirtyDaysDto().builder()
                 .name(findMember.get().getName())
-                .Editors(findMember.get().getThirtyDaysEditors())
-                .Languages(findMember.get().getThirtyDaysLanguages())
-                .Proejects(findMember.get().getThirtyDaysProjects())
+                .totalEditors(findMember.get().getThirtyDaysEditors())
+                .totalLanguages(findMember.get().getThirtyDaysLanguages())
+                .totalProejects(findMember.get().getThirtyDaysProjects())
                 .money(findMember.get().getMoney())
                 .oranization(findMember.get().getOrganization())
+                .imageURL(findMember.get().getImage())
                 .build();
         return dto;
     }

@@ -2,6 +2,8 @@ package mega.waka.service;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import mega.waka.entity.Member;
+import mega.waka.entity.dto.ResponseInfoThirtyDaysDto;
+import mega.waka.entity.dto.ResponseThirtyDaysSummariesDto;
 import mega.waka.entity.editor.OneDaysEditor;
 import mega.waka.entity.language.OneDaysLanguage;
 import mega.waka.entity.project.OneDaysProject;
@@ -23,9 +25,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class OneDaysWakaService {
@@ -47,16 +47,45 @@ public class OneDaysWakaService {
         this.oneDaysLanguageRepository = oneDaysLanguageRepository;
         this.memberRepository = memberRepository;
     }
+    public ResponseThirtyDaysSummariesDto get_One_Month(UUID id){
+        Optional<Member> findMember = memberRepository.findById(id);
+        findMember.orElseThrow(()->{
+            throw new IllegalArgumentException("해당하는 멤버가 없습니다.");
+        });
+        List<OneDaysProject> oneDaysProjects  = new ArrayList<>();
+        List<OneDaysEditor> oneDaysEditors = new ArrayList<>();
+        List<OneDaysLanguage> oneDaysLanguages = new ArrayList<>();
+
+        for (OneDaysProject project : findMember.get().getOneDaysProjects()) {
+            if(project.getCreateDate().isAfter(LocalDate.now().minusDays(30)) || project.getCreateDate().isEqual(LocalDate.now())){
+                oneDaysProjects.add(project);
+            }
+        }
+        for(OneDaysLanguage language : findMember.get().getOneDaysLanguages()){
+            if(language.getCreateDate().isAfter(LocalDate.now().minusDays(30))|| language.getCreateDate().isEqual(LocalDate.now())){
+                oneDaysLanguages.add(language);
+            }
+        }
+        for(OneDaysEditor editor : findMember.get().getOneDaysEditors()){
+            if(editor.getCreateDate().isAfter(LocalDate.now().minusDays(30)) && editor.getCreateDate().isBefore(LocalDate.now()))
+                oneDaysEditors.add(editor);
+        }
+        ResponseThirtyDaysSummariesDto dto = new ResponseThirtyDaysSummariesDto();
+
+        oneDaysLanguages.clear();
+        oneDaysEditors.clear();
+        oneDaysProjects.clear();
+        return dto;
+    }
     public void update_OneDays() {
         List<Member> members = memberRepository.findAll();
         String responseData="";
         try {
             RestTemplate restTemplate = new RestTemplate();
-            String apiUrl = "https://wakatime.com/api/v1/users/current/status_bar/today";
+            String apiUrl = "https://wakatime.com/api/v1/users/current/summaries?range=yesterday";
             for (Member member : members) {
 
                 UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(apiUrl);
-
                 HttpHeaders headers = new HttpHeaders();
                 headers.setBasicAuth(member.getSecretKey(),"");
 
@@ -69,15 +98,16 @@ public class OneDaysWakaService {
                 responseData = response.getBody();
                 JSONParser parser = new JSONParser();
                 JSONObject jsonObject = (JSONObject) parser.parse(responseData);
-                JSONObject data = (JSONObject) jsonObject.get("data");
-                JSONObject operating_systems = (JSONObject) data.get("grand_total");
-                System.out.println("operating_systems = " + operating_systems);
-                member.setOneDay(operating_systems.get("text").toString());
-                memberRepository.save(member);
+                JSONArray data = (JSONArray) jsonObject.get("data");
 
-                /*JSONArray languages = (JSONArray) data.get("languages");
-                JSONArray editors = (JSONArray) data.get("editors");
-                JSONArray projects = (JSONArray) data.get("projects");
+                JSONObject range = (JSONObject) data.get(0);
+                JSONObject date = (JSONObject) range.get("range");
+                member.setOneDay(date.get("date").toString());
+                memberRepository.save(member);
+                JSONObject obj = (JSONObject) data.get(0);
+                JSONArray languages = (JSONArray) obj.get("languages");
+                JSONArray editors = (JSONArray) obj.get("editors");
+                JSONArray projects = (JSONArray) obj.get("projects");
 
                 if(languages.isEmpty() || editors.isEmpty() || projects.isEmpty()) continue;
                 else {
@@ -85,13 +115,12 @@ public class OneDaysWakaService {
                     set_Project(projects);
                     set_Editor(editors);
                 }
-
                 set_Member_By_Language(member);
                 set_Member_By_Editor(member);
                 set_Member_By_Project(member);
                 editList.clear();
                 languageList.clear();
-                projectList.clear();*/
+                projectList.clear();
             }
         } catch (ParseException e) {
             throw new RuntimeException(e);
@@ -196,7 +225,7 @@ public class OneDaysWakaService {
                 OneDaysLanguage language = new OneDaysLanguage().builder()
                         .name(key)
                         .time(languageList.get(key))
-                        .createDate(LocalDate.now())
+                        .createDate(LocalDate.now().minusDays(1))
                         .member(member)
                         .build();
                 oneDaysLanguageRepository.save(language);
@@ -209,7 +238,7 @@ public class OneDaysWakaService {
                 String name = "";
                 for (String key : languageList.keySet()) {
                     name = key;
-                    if (member.getOneDaysLanguages().get(i).getName().equals(key) && member.getOneDaysLanguages().get(i).getCreateDate().equals(LocalDate.now())) {
+                    if (member.getOneDaysLanguages().get(i).getName().equals(key) && member.getOneDaysLanguages().get(i).getCreateDate().equals(LocalDate.now().minusDays(1))) {
                         member.getOneDaysLanguages().get(i).setTime(languageList.get(key));
                         flag = true;
                     }
@@ -221,7 +250,7 @@ public class OneDaysWakaService {
                     OneDaysLanguage language = new OneDaysLanguage().builder()
                             .name(name)
                             .time(languageList.get(name))
-                            .createDate(LocalDate.now())
+                            .createDate(LocalDate.now().minusDays(1))
                             .member(member)
                             .build();
                     oneDaysLanguageRepository.save(language);
@@ -237,7 +266,7 @@ public class OneDaysWakaService {
                 OneDaysProject project = new OneDaysProject().builder()
                         .name(key)
                         .time(projectList.get(key))
-                        .createDate(LocalDate.now())
+                        .createDate(LocalDate.now().minusDays(1))
                         .member(member)
                         .build();
                 oneDaysProjectRepository.save(project);
@@ -251,7 +280,7 @@ public class OneDaysWakaService {
                 String name="";
                 for(String key : projectList.keySet()){
                     name = key;
-                    if(member.getOneDaysProjects().get(i).getName().equals(key) && member.getOneDaysProjects().get(i).getCreateDate().equals(LocalDate.now())){
+                    if(member.getOneDaysProjects().get(i).getName().equals(key) && member.getOneDaysProjects().get(i).getCreateDate().equals(LocalDate.now().minusDays(1))){
                         member.getOneDaysProjects().get(i).setTime(projectList.get(key));
                         flag=true;
                     }
@@ -263,7 +292,7 @@ public class OneDaysWakaService {
                     OneDaysProject project = new OneDaysProject().builder()
                             .name(name)
                             .time(projectList.get(name))
-                            .createDate(LocalDate.now())
+                            .createDate(LocalDate.now().minusDays(1))
                             .member(member)
                             .build();
                     oneDaysProjectRepository.save(project);
@@ -280,7 +309,7 @@ public class OneDaysWakaService {
                 OneDaysEditor editor = new OneDaysEditor().builder()
                         .name(key)
                         .time(editList.get(key))
-                        .createDate(LocalDate.now())
+                        .createDate(LocalDate.now().minusDays(1))
                         .member(member)
                         .build();
                 oneDaysEditorRepository.save(editor);
@@ -294,7 +323,7 @@ public class OneDaysWakaService {
                 String name="";
                 for(String key : editList.keySet()){
                     name = key;
-                    if(member.getOneDaysEditors().get(i).getName().equals(key)&& member.getOneDaysEditors().get(i).getCreateDate().equals(LocalDate.now())){
+                    if(member.getOneDaysEditors().get(i).getName().equals(key)&& member.getOneDaysEditors().get(i).getCreateDate().equals(LocalDate.now().minusDays(1))){
                         member.getOneDaysEditors().get(i).setTime(editList.get(key));
                         flag=true;
                     }
@@ -306,7 +335,7 @@ public class OneDaysWakaService {
                     OneDaysEditor editor = new OneDaysEditor().builder()
                             .name(name)
                             .time(editList.get(name))
-                            .createDate(LocalDate.now())
+                            .createDate(LocalDate.now().minusDays(1))
                             .member(member)
                             .build();
                     oneDaysEditorRepository.save(editor);

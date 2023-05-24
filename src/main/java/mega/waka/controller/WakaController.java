@@ -1,12 +1,15 @@
 package mega.waka.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import mega.waka.entity.dto.Organization;
+import mega.waka.entity.dto.*;
 import mega.waka.service.*;
+import org.json.simple.JSONArray;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 @RestController
@@ -61,10 +64,21 @@ public class WakaController {
     public ResponseEntity getMember_Info(@PathVariable String id, @RequestParam int date){
         try{
             if(date==7){
-                return new ResponseEntity(memberService.get_Member_info_day(UUID.fromString(id)),HttpStatus.OK);
+                ResponseInfoDto dto =memberService.get_Member_info_day(UUID.fromString(id));
+                Map<String, ResponseSummariesDto> map = memberService.get_totals_Member(UUID.fromString(id));
+                JSONArray arr = new JSONArray();
+                arr.add(dto);
+                arr.add(map);
+                return new ResponseEntity(arr,HttpStatus.OK);
             }
             else if(date ==30) {
-                return new ResponseEntity(memberService.get_Member_info_ThirtyDays(UUID.fromString(id)),HttpStatus.OK);
+                ResponseInfoThirtyDaysDto dto = memberService.get_Member_info_ThirtyDays(UUID.fromString(id));
+                ResponseThirtyDaysSummariesDto dtos = oneDaysWakaService.get_One_Month(UUID.fromString(id));
+                JSONArray arr = new JSONArray();
+                arr.add(dto);
+                arr.add(dtos);
+                System.out.println(dtos.getSummariesEditors());
+                return new ResponseEntity(arr,HttpStatus.OK);
             }
             else return new ResponseEntity("7 or 30 중 하나를 입력해야 됩니다.",HttpStatus.BAD_REQUEST);
         }catch (RuntimeException e){
