@@ -13,7 +13,10 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class ResponseThirtyDaysSummariesDto {
+    @Builder.Default
     private List<OneDaysEditor> summariesEditors = new ArrayList<>();
+    @Builder.Default
     private List<OneDaysLanguage> summariesLanguages = new ArrayList<>();
+    @Builder.Default
     private List<OneDaysProject> summariesProjects = new ArrayList<>();
 }

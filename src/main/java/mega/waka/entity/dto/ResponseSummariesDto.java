@@ -15,8 +15,10 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class ResponseSummariesDto {
-
+    @Builder.Default
     private List<JSONArray> summariesEditors = new ArrayList<>();
+    @Builder.Default
     private List<JSONArray> summariesLanguages = new ArrayList<>();
+    @Builder.Default
     private List<JSONArray> summariesProjects = new ArrayList<>();
 }
