@@ -64,23 +64,14 @@ public class WakaController {
     public ResponseEntity getMember_Info(@PathVariable String id, @RequestParam int date){
         try{
             if(date==7){
-                ResponseInfoDto dto =memberService.get_Member_info_day(UUID.fromString(id));
+                ResponseInfoDto dto =memberService.get_Member_info_day(id);
                 Map<String, ResponseSummariesDto> map = memberService.get_totals_Member(UUID.fromString(id));
                 JSONArray arr = new JSONArray();
                 arr.add(dto);
                 arr.add(map);
                 return new ResponseEntity(arr,HttpStatus.OK);
             }
-            else if(date ==30) {
-                ResponseInfoThirtyDaysDto dto = memberService.get_Member_info_ThirtyDays(UUID.fromString(id));
-                ResponseThirtyDaysSummariesDto dtos = oneDaysWakaService.get_One_Month(UUID.fromString(id));
-                JSONArray arr = new JSONArray();
-                arr.add(dto);
-                arr.add(dtos);
-                System.out.println(dtos.getSummariesEditors());
-                return new ResponseEntity(arr,HttpStatus.OK);
-            }
-            else return new ResponseEntity("7 or 30 중 하나를 입력해야 됩니다.",HttpStatus.BAD_REQUEST);
+            else return new ResponseEntity("7을 입력해야 됩니다.",HttpStatus.BAD_REQUEST);
         }catch (RuntimeException e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }

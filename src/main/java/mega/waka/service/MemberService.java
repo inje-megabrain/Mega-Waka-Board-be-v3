@@ -1,5 +1,7 @@
 package mega.waka.service;
 
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import mega.waka.entity.Member;
 import mega.waka.entity.Money;
 import mega.waka.entity.dto.ResponseInfoDto;
@@ -17,6 +19,7 @@ import mega.waka.repository.MoneyRepository;
 import mega.waka.repository.editor.SevenDaysEditorRepository;
 import mega.waka.repository.language.SevenDaysLanguageRepository;
 import mega.waka.repository.project.SevendaysProjectRepository;
+import org.hibernate.Session;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -52,7 +55,7 @@ public class MemberService {
         this.sevendaysProjectRepository = sevendaysProjectRepository;
         this.sevenDaysEditorRepository = sevenDaysEditorRepository;
     }
-    public String Authentication_apiKey(String apiKey){
+    public String Authentication_apiKey(String apiKey){ //Member Create 시 api key 검증
         RestTemplate restTemplate = new RestTemplate();
         String apiUrl ="https://wakatime.com/api/v1/users/current";
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(apiUrl);
@@ -70,7 +73,7 @@ public class MemberService {
         if(responseData.isBlank()) return "";
         else return "200";
     }
-    public List<ResponseMemberDto> memberList(){
+    public List<ResponseMemberDto> memberList(){ // Member List 조회
        List<Member> findMembers = memberRepository.findAll();
        List<ResponseMemberDto> dtos = new ArrayList<>();
        for(Member member : findMembers){
@@ -96,10 +99,9 @@ public class MemberService {
         member.orElseThrow(()->{
             throw new IllegalArgumentException("해당하는 멤버가 없습니다.");
         });
-        Optional<Money> money = moneyRepository.findById(member.get().getMoney().getId());
-        System.out.println("money.get().getId() = " + money.get().getId());
+        System.out.println("member.get().getMoney() = " + member.get().getMoney());
+        moneyRepository.delete(member.get().getMoney());
         memberRepository.delete(member.get());
-        moneyRepository.delete(money.get());
     }
     public void update_apiKey(UUID id, String apiKey) {  // apiKey 변경 api
         Optional<Member> member = memberRepository.findById(id);
@@ -154,8 +156,8 @@ public class MemberService {
         }
         return map;
     }
-    public ResponseInfoDto get_Member_info_day(UUID id){
-        Optional<Member> findMember = memberRepository.findById(id);
+    public ResponseInfoDto get_Member_info_day(String id){ // 멤버 상세 조회
+        Optional<Member> findMember = memberRepository.findById(UUID.fromString(id));
         findMember.orElseThrow(()->{
             throw new IllegalArgumentException("해당하는 멤버가 없습니다.");
         });
@@ -224,6 +226,7 @@ public class MemberService {
                 .build();
         return dto;
     }
+    @Transactional
     public void add_Member_By_apiKey(String name, String organization, String apiKey, String githubId,String department) {  // member 생성 api
         Member findMember = memberRepository.findByNameAndOrganization(name,organization);
         if(findMember ==null){
@@ -232,6 +235,7 @@ public class MemberService {
             member.setSecretKey(apiKey);
             member.setName(name);
             member.setId(UUID.randomUUID());
+            member.setThirtyDays("0:0");
             member.setFourteenDays("0:0");
             member.setSevenDays("0:0");
             member.setOneDay("0:0");

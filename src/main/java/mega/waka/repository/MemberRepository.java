@@ -9,6 +9,5 @@ import java.util.UUID;
 
 @Repository
 public interface MemberRepository extends JpaRepository<Member, UUID> {
-
     Member findByNameAndOrganization(String name, String organization);
 }

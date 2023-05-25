@@ -67,7 +67,8 @@ public class Member {
     private List<ThirtyDaysProject> thirtyDaysProjects = new ArrayList<>();
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<ThirtyDaysLanguage> thirtyDaysLanguages = new ArrayList<>();
-    @OneToOne
+
+    @OneToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
     private Money money;
     private LocalDateTime startDate;
 }

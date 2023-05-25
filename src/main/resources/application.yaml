@@ -7,3 +7,6 @@ spring:
       - application-redis.yaml
   main:
     allow-bean-definition-overriding: true
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
