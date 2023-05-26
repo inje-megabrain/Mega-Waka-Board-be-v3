@@ -101,8 +101,8 @@ public class OneDaysWakaService {
                 JSONArray data = (JSONArray) jsonObject.get("data");
 
                 JSONObject range = (JSONObject) data.get(0);
-                JSONObject date = (JSONObject) range.get("range");
-                member.setOneDay(date.get("text").toString());
+                JSONObject grand_total = (JSONObject) range.get("grand_total");
+                member.setOneDay(grand_total.get("text").toString());
                 memberRepository.save(member);
                 JSONObject obj = (JSONObject) data.get(0);
                 JSONArray languages = (JSONArray) obj.get("languages");
