@@ -137,6 +137,7 @@ public class MemberService {
             JSONParser parser = new JSONParser();
             JSONObject jsonObject = (JSONObject) parser.parse(responseData);
             JSONArray data = (JSONArray) jsonObject.get("data");
+            System.out.println(data);
             for(int i=0;i<data.size();i++){
                 JSONObject object = (JSONObject) data.get(i);
                 JSONObject range = (JSONObject) object.get("range");
@@ -144,6 +145,7 @@ public class MemberService {
                 JSONArray languages = (JSONArray) object.get("languages");
                 JSONArray projects = (JSONArray) object.get("projects");
                 JSONArray editors = (JSONArray) object.get("editors");
+
                 ResponseSummariesDto dto = new ResponseSummariesDto().builder()
                         .summariesEditors(editors)
                         .summariesLanguages(languages)
