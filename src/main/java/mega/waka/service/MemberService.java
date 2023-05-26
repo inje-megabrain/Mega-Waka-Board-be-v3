@@ -111,7 +111,7 @@ public class MemberService {
         member.get().setSecretKey(apiKey);
         memberRepository.save(member.get());
     }
-
+    @Transactional
     public Map<String,ResponseSummariesDto> get_totals_Member(UUID id){
         Optional<Member> findMember = memberRepository.findById(id);
         findMember.orElseThrow(()->{
@@ -156,6 +156,7 @@ public class MemberService {
         }
         return map;
     }
+    @Transactional
     public ResponseInfoDto get_Member_info_day(String id){ // 멤버 상세 조회
         Optional<Member> findMember = memberRepository.findById(UUID.fromString(id));
         findMember.orElseThrow(()->{
@@ -194,7 +195,9 @@ public class MemberService {
             set_Member_By_Language(findMember.get());
             set_Member_By_Editor(findMember.get());
             set_Member_By_Project(findMember.get());
-
+            languageList.clear();
+            editList.clear();
+            projectList.clear();
             responseInfoDto = new ResponseInfoDto().builder()
                 .name(findMember.get().getName())
                 .totalLanguages(findMember.get().getSevenlanguages())
