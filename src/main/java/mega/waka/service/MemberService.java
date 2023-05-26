@@ -99,7 +99,7 @@ public class MemberService {
         member.orElseThrow(()->{
             throw new IllegalArgumentException("해당하는 멤버가 없습니다.");
         });
-        System.out.println("member.get().getMoney() = " + member.get().getMoney());
+
         moneyRepository.delete(member.get().getMoney());
         memberRepository.delete(member.get());
     }
@@ -256,6 +256,7 @@ public class MemberService {
     }
     public void delete_all(){
         memberRepository.deleteAll();
+        moneyRepository.deleteAll();
     }
 
     private Map<String,String> set_Language(JSONArray languages){
