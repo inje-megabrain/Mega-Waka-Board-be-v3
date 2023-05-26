@@ -120,6 +120,7 @@ public class WakaController {
     @DeleteMapping("/members")
     @Operation(summary = "delete all")
     public ResponseEntity delete_All_Member(){
+        memberService.delete_all();
         return new ResponseEntity("success",HttpStatus.OK);
     }
 }
