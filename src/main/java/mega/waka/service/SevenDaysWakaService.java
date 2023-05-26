@@ -73,11 +73,13 @@ public class SevenDaysWakaService {
 
                 JSONParser parser = new JSONParser();
                 JSONObject jsonObject = (JSONObject) parser.parse(responseData);
-                JSONObject data = (JSONObject) jsonObject.get("data");
-                JSONArray categories = (JSONArray) data.get("categories");
-                JSONObject index = (JSONObject) categories.get(0);
-                member.setSevenDays(index.get("text").toString());
-                memberRepository.save(member);
+                JSONArray data = (JSONArray) jsonObject.get("data");
+                for(int i=0;i<data.size();i++){
+                    JSONObject obj = (JSONObject) data.get(i);
+                    JSONObject cumulative_total = (JSONObject) obj.get("cumulative_total");
+                    member.setSevenDays((String) cumulative_total.get("text"));
+                    memberRepository.save(member);
+                }
 
                 /*JSONArray languages = (JSONArray) data.get("languages");
                 JSONArray editors = (JSONArray) data.get("editors");
