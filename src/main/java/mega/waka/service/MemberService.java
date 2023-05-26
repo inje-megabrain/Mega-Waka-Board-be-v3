@@ -255,8 +255,8 @@ public class MemberService {
         }
     }
     public void delete_all(){
-        memberRepository.deleteAll();
         moneyRepository.deleteAll();
+        memberRepository.deleteAll();
     }
 
     private Map<String,String> set_Language(JSONArray languages){
