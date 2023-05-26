@@ -17,15 +17,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-
+@Builder
 public class ResponseInfoThirtyDaysDto {
-
     private String name;
+    @Builder.Default
     private List<ThirtyDaysEditor> totalEditors = new ArrayList<>();
+    @Builder.Default
     private List<ThirtyDaysLanguage> totalLanguages = new ArrayList<>();
+    @Builder.Default
     private List<ThirtyDaysProject> totalProejects = new ArrayList<>();
     private String oranization;
     private Money money;
