@@ -230,7 +230,7 @@ public class MemberService {
     public void add_Member_By_apiKey(String name, String organization, String apiKey, String githubId,String department) {  // member 생성 api
         Member findMember = memberRepository.findByNameAndOrganization(name,organization);
         if(findMember ==null){
-            Money money = new Money().builder().amount(0).updateDate(LocalDate.now()).build();
+            Money money = new Money().builder().amount(0).updateDate(LocalDate.now().minusDays(1)).build();
             Member member = new Member();
             member.setSecretKey(apiKey);
             member.setName(name);

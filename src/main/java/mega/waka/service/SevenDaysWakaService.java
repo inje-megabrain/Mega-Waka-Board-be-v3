@@ -88,11 +88,12 @@ public class SevenDaysWakaService {
                 set_Member_By_Project(member,projects);*/
 
                 DayOfWeek dayOfWeek = LocalDate.now().getDayOfWeek();
-                if(dayOfWeek.getDisplayName(TextStyle.FULL, Locale.KOREAN).equals("금요일")){
+                if(dayOfWeek.getDisplayName(TextStyle.FULL, Locale.KOREAN).equals("금요일") && member.getMoney().getUpdateDate().isEqual(LocalDate.now())){
                     int money = member.getMoney().getAmount();
-                    String [] time = member.getSevenDays().split("hrs");
-                    int hour = Integer.parseInt(time[0]);
-                    money += hour*9620;
+                    String [] time = member.getSevenDays().split(" ");
+                    int hour = Integer.valueOf(time[0]);
+                    money += hour *9620;
+                    System.out.println(money);
                     member.getMoney().setAmount(money);
                     member.getMoney().setUpdateDate(LocalDate.now());
                     memberRepository.save(member);
