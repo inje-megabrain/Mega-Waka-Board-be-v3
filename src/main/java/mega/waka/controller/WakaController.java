@@ -117,4 +117,9 @@ public class WakaController {
             return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+    @DeleteMapping("/members")
+    @Operation(summary = "delete all")
+    public ResponseEntity delete_All_Member(){
+        return new ResponseEntity("success",HttpStatus.OK);
+    }
 }

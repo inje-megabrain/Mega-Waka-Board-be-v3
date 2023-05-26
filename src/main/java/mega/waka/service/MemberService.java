@@ -251,7 +251,9 @@ public class MemberService {
             throw new IllegalArgumentException("이미 존재하는 멤버입니다.");
         }
     }
-
+    public void delete_all(){
+        memberRepository.deleteAll();
+    }
 
     private Map<String,String> set_Language(JSONArray languages){
         for(int j=0;j<languages.size();j++) {
