@@ -92,7 +92,7 @@ public class SevenDaysWakaService {
                     int money = member.getMoney().getAmount();
                     String [] time = member.getSevenDays().split(" ");
                     int hour = Integer.valueOf(time[0]);
-                    money += hour *9620;
+                    money += (hour *9620)/10000;
                     member.getMoney().setAmount(money);
                     member.getMoney().setUpdateDate(LocalDate.now());
                     memberRepository.save(member);
