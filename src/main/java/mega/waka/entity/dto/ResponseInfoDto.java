@@ -29,4 +29,5 @@ public class ResponseInfoDto {
     private String oranization;
     private Money money;
     private String imageURL;
+    private String department;
 }

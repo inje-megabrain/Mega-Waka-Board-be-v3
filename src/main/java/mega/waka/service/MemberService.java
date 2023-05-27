@@ -89,6 +89,7 @@ public class MemberService {
                    .department(member.getDepartment())
                    .startDate(member.getStartDate())
                    .money(member.getMoney())
+                   .department(member.getDepartment())
                    .build();
            dtos.add(dto);
        }
@@ -207,6 +208,8 @@ public class MemberService {
                     .money(findMember.get().getMoney())
                     .oranization(findMember.get().getOrganization())
                     .imageURL(findMember.get().getImage())
+                    .department(findMember.get().getDepartment())
+
                 .build();
         } catch (ParseException e) {
             throw new RuntimeException(e);
