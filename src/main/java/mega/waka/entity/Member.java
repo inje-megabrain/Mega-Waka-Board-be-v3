@@ -14,6 +14,7 @@ import mega.waka.entity.project.FourteenDaysProject;
 import mega.waka.entity.project.OneDaysProject;
 import mega.waka.entity.project.SevenDaysProject;
 import mega.waka.entity.project.ThirtyDaysProject;
+import org.hibernate.annotations.BatchSize;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -41,31 +42,42 @@ public class Member {
     private String department;
 
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @BatchSize(size = 100)
     private List<FourteenDaysProject> fourtyDaysProjects = new ArrayList<>();
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @BatchSize(size = 100)
     private List<FourteenDaysLanguage> fourtyDaysLanguages = new ArrayList<>();
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @BatchSize(size = 100)
     private List<FourteenDaysEditor> fourtyDaysEditors = new ArrayList<>();
-
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @BatchSize(size = 100)
     private List<SevenDaysProject> sevenprojects = new ArrayList<>();
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @BatchSize(size = 100)
     private List<SevenDaysLanguage> sevenlanguages = new ArrayList<>();
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @BatchSize(size = 100)
     private List<SevenDaysEditor> seveneditors = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @BatchSize(size = 100)
     private List<OneDaysEditor> oneDaysEditors = new ArrayList<>();
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @BatchSize(size = 100)
     private List<OneDaysProject> oneDaysProjects = new ArrayList<>();
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @BatchSize(size = 100)
     private List<OneDaysLanguage> oneDaysLanguages = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @BatchSize(size = 100)
     private List<ThirtyDaysEditor> thirtyDaysEditors = new ArrayList<>();
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @BatchSize(size = 100)
     private List<ThirtyDaysProject> thirtyDaysProjects = new ArrayList<>();
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @BatchSize(size = 100)
     private List<ThirtyDaysLanguage> thirtyDaysLanguages = new ArrayList<>();
 
     @OneToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL)

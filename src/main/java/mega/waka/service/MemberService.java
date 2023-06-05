@@ -40,7 +40,6 @@ public class MemberService {
     private final MoneyRepository moneyRepository;
     private final SevenDaysLanguageRepository sevenDaysLanguageRepository;
     private final SevendaysProjectRepository sevendaysProjectRepository;
-
     private final SevenDaysEditorRepository sevenDaysEditorRepository;
 
     private Map<String,String> languageList = new HashMap<>();
@@ -113,7 +112,7 @@ public class MemberService {
         memberRepository.save(member.get());
     }
     @Transactional
-    public Map<String,ResponseSummariesDto> get_totals_Member(UUID id){
+    public Map<String,ResponseSummariesDto> get_totals_Member(UUID id){ // 7일간 일평균 사용량 조회 api
         Optional<Member> findMember = memberRepository.findById(id);
         findMember.orElseThrow(()->{
             throw new IllegalArgumentException("해당하는 멤버가 없습니다.");
@@ -290,7 +289,6 @@ public class MemberService {
                 languageList.put(name,hour+":"+min);
             }
         }
-
         return languageList;
     }
     private Map<String,String> set_Project(JSONArray projects){
@@ -356,7 +354,7 @@ public class MemberService {
 
     }
     private void set_Member_By_Language(Member member) {
-        if (member.getSevenlanguages().size() == 0) {
+        if (member.getSevenlanguages().size() == 0) { //최초 등록시
             for (String key : languageList.keySet()) {
                 SevenDaysLanguage language = new SevenDaysLanguage().builder()
                         .name(key)
@@ -374,10 +372,8 @@ public class MemberService {
                     name = key;
                     if (member.getSevenlanguages().get(i).getName().equals(key)) {
                         member.getSevenlanguages().get(i).setTime(languageList.get(key));
+                        memberRepository.save(member);
                         flag = true;
-                    }
-                    if(member.getSevenlanguages().get(i).getTime().equals("0:0")){
-                        member.getSevenlanguages().remove(i);
                     }
                 }
                 if (flag == false) {
@@ -412,10 +408,8 @@ public class MemberService {
                     name = key;
                     if(member.getSevenprojects().get(i).getName().equals(key)){
                         member.getSevenprojects().get(i).setTime(projectList.get(key));
+                        memberRepository.save(member);
                         flag=true;
-                    }
-                    if(member.getSevenprojects().get(i).getTime().equals("0:0")){
-                        member.getSevenprojects().remove(i);
                     }
                 }
                 if(flag==false){
@@ -452,10 +446,8 @@ public class MemberService {
                     name = key;
                     if(member.getSeveneditors().get(i).getName().equals(key)){
                         member.getSeveneditors().get(i).setTime(editList.get(key));
+                        memberRepository.save(member);
                         flag=true;
-                    }
-                    if(member.getSeveneditors().get(i).getTime().equals("0:0")){
-                        member.getSeveneditors().remove(i);
                     }
                 }
                 if(flag==false){
