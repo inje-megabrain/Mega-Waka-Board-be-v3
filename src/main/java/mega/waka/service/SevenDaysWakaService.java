@@ -51,7 +51,7 @@ public class SevenDaysWakaService {
         String responseData="";
         try {
             RestTemplate restTemplate = new RestTemplate();
-            String apiUrl ="https://wakatime.com/api/v1/users/current/stats/last_7_days";
+            String apiUrl ="https://wakatime.com/api/v1/users/current/summaries?range=last_7_days";
             for (Member member : members) {
 
                 UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(apiUrl);
@@ -69,10 +69,9 @@ public class SevenDaysWakaService {
 
                 JSONParser parser = new JSONParser();
                 JSONObject jsonObject = (JSONObject) parser.parse(responseData);
-                JSONObject data = (JSONObject) jsonObject.get("data");
-                JSONArray categories = (JSONArray) data.get("categories");
-                JSONObject index = (JSONObject) categories.get(0);
-                member.setSevenDays(index.get("text").toString());
+                JSONObject cumulative_total  = (JSONObject) jsonObject.get("cumulative_total");
+                System.out.println("cumulative_total = " + cumulative_total);
+                member.setSevenDays(cumulative_total.get("text").toString());
                 memberRepository.save(member);
 
                /* JSONArray languages = (JSONArray) data.get("languages");
