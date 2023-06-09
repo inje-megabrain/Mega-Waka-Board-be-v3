@@ -97,25 +97,11 @@ public class DiscordListener extends ListenerAdapter {
                         Pattern pattern = Pattern.compile("\\b(\\d+) hrs (\\d+) mins\\b");
                         Matcher matcher = pattern.matcher(member2.getSevenDays());
                         if(matcher.find()){
-                            if(member2.getName().equals(member.getName())){
-                                int hour = Integer.parseInt(matcher.group(1));
-                                int minute = Integer.parseInt(matcher.group(2));
-                                memberMap2.put(member2.getName(),(hour*60)+minute);
-                            }
-                            else{
-                                int hour = Integer.parseInt(matcher.group(1));
-                                int minute = Integer.parseInt(matcher.group(2));
-                                memberMap2.put(member.getName(),(hour*60)+minute);
-                            }
+                            int hour = Integer.parseInt(matcher.group(1));
+                            int minute = Integer.parseInt(matcher.group(2));
+                            memberMap2.put(member2.getName(),(hour*60)+minute);
                         }
-                        else{
-                            if(member2.getName().equals(member.getName())){
-                                memberMap2.put(member2.getName(),0);
-                            }
-                            else{
-                                memberMap2.put(member.getName(),0);
-                            }
-                        }
+                        else memberMap2.put(member2.getName(),0);
                     }
                     int cnt2=0;
                     List<Map.Entry<String,Integer>> sortedList2 = new ArrayList<>(memberMap2.entrySet());
