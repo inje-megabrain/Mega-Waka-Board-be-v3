@@ -37,7 +37,7 @@ public class DiscordListener extends ListenerAdapter {
         String returnMessage = "";
         String newMessage = "!!!!!***근무 시간 미달자 ***!!!! \n";
         EmbedBuilder embed = new EmbedBuilder();
-        embed.addField("https://dev.megabrain.kr/waka", "", false);
+        embed.addField("https://dev.app.megabrain.kr/waka", "", false);
         embed.setThumbnail("https://avatars.githubusercontent.com/inje-megabrain");
         embed.setFooter("메가브레인 와카 봇", "https://avatars.githubusercontent.com/inje-megabrain");
         switch(message){
@@ -112,7 +112,6 @@ public class DiscordListener extends ListenerAdapter {
                     Collections.sort(sortedList2, Map.Entry.comparingByValue(Comparator.reverseOrder()));
                     embed.setTitle(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))+" 기준 " +"와카보드 개인 순위");
                     embed.setColor(Color.green);
-                    System.out.println(sortedList2.size());
                     for(int i=0;i<sortedList2.size();i++){
                         if(sortedList2.get(i).getKey().equals(user.getName())){
                             if(sortedList2.get(i).getValue() <=10*60) {
