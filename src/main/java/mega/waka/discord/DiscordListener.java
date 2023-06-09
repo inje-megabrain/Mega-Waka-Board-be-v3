@@ -99,9 +99,9 @@ public class DiscordListener extends ListenerAdapter {
                         if(matcher.find()){
                             int hour = Integer.parseInt(matcher.group(1));
                             int minute = Integer.parseInt(matcher.group(2));
-                            memberMap2.put(member2.getName(),hour*60+minute);
+                            memberMap2.put(member.getName(),hour*60+minute);
                         }
-                        else memberMap2.put(member2.getName(),0);
+                        else memberMap2.put(member.getName(),0);
                     }
                     int cnt2=0;
                     List<Map.Entry<String,Integer>> sortedList2 = new ArrayList<>(memberMap2.entrySet());
