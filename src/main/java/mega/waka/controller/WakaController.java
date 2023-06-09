@@ -123,4 +123,15 @@ public class WakaController {
         memberService.delete_all();
         return new ResponseEntity("success",HttpStatus.OK);
     }
+    @DeleteMapping("/member/{id}")
+    @Operation(summary = "delete member sevendays")
+    public ResponseEntity deleteMemberSevendays(@PathVariable String id){
+        try{
+            memberService.deleteSevenDays(UUID.fromString(id));
+            return new ResponseEntity("success",HttpStatus.OK);
+        }catch (RuntimeException e){
+            return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
 }

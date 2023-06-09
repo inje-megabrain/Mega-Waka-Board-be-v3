@@ -465,4 +465,16 @@ public class MemberService {
             }
         }
     }
+    public void deleteSevenDays(UUID id){
+        Optional<Member> member = memberRepository.findById(id);
+        if(member.isPresent()){
+            member.get().getSeveneditors().clear();
+            member.get().getSevenlanguages().clear();
+            member.get().getSevenprojects().clear();
+            sevenDaysEditorRepository.deleteAll();
+            sevenDaysLanguageRepository.deleteAll();
+            sevendaysProjectRepository.deleteAll();
+            memberRepository.save(member.get());
+        }
+    }
 }
