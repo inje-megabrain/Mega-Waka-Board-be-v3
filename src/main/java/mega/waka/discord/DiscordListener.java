@@ -137,7 +137,7 @@ public class DiscordListener extends ListenerAdapter {
         String [] messageArray = message.getContentRaw().split(" ");
         if(messageArray[0].equals("waka!")){
              //944265427020812328, 1116650046797135992
-            if(!event.getChannel().getId().equals("1116650046797135992")) return;
+            if(!event.getChannel().getId().equals("944265427020812328")) return;
             String [] messageArgs = Arrays.copyOfRange(messageArray,1,messageArray.length);
             for(String msg : messageArgs){
                 createMessage(event,msg);
