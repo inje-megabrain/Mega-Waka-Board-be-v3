@@ -55,14 +55,14 @@ public class DiscordListener extends ListenerAdapter {
                 embed.setColor(Color.green);
                 int cnt=0;
                 for(int i=0;i<sortedList.size();i++){
-                    if(sortedList.get(i).getValue()/60 <=10*60+59){
+                    if(sortedList.get(i).getValue() <=10*60+59){
                         cnt++;
                         newMessage += (i+1)+"위 "+sortedList.get(i).getKey()+" "+sortedList.get(i).getValue()/60+"시간 "+sortedList.get(i).getValue()%60+"분\n";
                     }
                     else returnMessage += (i+1)+"위 "+sortedList.get(i).getKey()+" "+sortedList.get(i).getValue()/60+"시간 "+sortedList.get(i).getValue()%60+"분\n";
                 }
                 if(cnt==0) newMessage += "현재 근무 시간 미달자가 없습니다.\n";
-                embed.setDescription(returnMessage + newMessage);
+                embed.setDescription(returnMessage +"\n"+ newMessage);
                 returnMessage = "현재 시간 기준 전체 순위입니다.";
             break;
             case "개인순위" :
@@ -107,13 +107,14 @@ public class DiscordListener extends ListenerAdapter {
                         if(sortedList2.get(i).getKey().equals(user.getName())){
                             if(sortedList2.get(i).getValue() <=10*60+59) {
                                 cnt2++;
-                                newMessage += (i+1)+"위 "+sortedList2.get(i).getKey()+" "+sortedList2.get(i).getValue()/60+"시간 "+sortedList2.get(i).getValue()%60+"분\n";
+                                newMessage += sortedList2.get(i).getKey()+" "+sortedList2.get(i).getValue()/60+"시간 "+sortedList2.get(i).getValue()%60+"분\n";
                             }
-                            else returnMessage += (i+1)+"위 "+sortedList2.get(i).getKey()+" "+sortedList2.get(i).getValue()/60+"시간 "+sortedList2.get(i).getValue()%60+"분\n";
+                            else returnMessage += sortedList2.get(i).getKey()+" "+sortedList2.get(i).getValue()/60+"시간 "+sortedList2.get(i).getValue()%60+"분\n";
                         }
                     }
-                    if(cnt2==0) newMessage += "현재 근무 시간 미달자가 없습니다.\n";
-                    embed.setDescription(returnMessage + newMessage);
+                    if(cnt2==0) newMessage += user.getName() + "님은 근무 시간 미달자가 아닙니다.\n";
+
+                    embed.setDescription(returnMessage +"\n"+ newMessage);
                     returnMessage = "현재 시간 기준 순위입니다.";
                 }
             break;
