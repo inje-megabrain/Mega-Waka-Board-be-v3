@@ -55,7 +55,7 @@ public class DiscordListener extends ListenerAdapter {
                 embed.setColor(Color.green);
                 int cnt=0;
                 for(int i=0;i<sortedList.size();i++){
-                    if(sortedList.get(i).getValue() <=10*60+59){
+                    if(sortedList.get(i).getValue() <=10*60){
                         cnt++;
                         newMessage += (i+1)+"위 "+sortedList.get(i).getKey()+" "+sortedList.get(i).getValue()/60+"시간 "+sortedList.get(i).getValue()%60+"분\n";
                     }
@@ -105,7 +105,7 @@ public class DiscordListener extends ListenerAdapter {
                     embed.setColor(Color.green);
                     for(int i=0;i<sortedList2.size();i++){
                         if(sortedList2.get(i).getKey().equals(user.getName())){
-                            if(sortedList2.get(i).getValue() <=10*60+59) {
+                            if(sortedList2.get(i).getValue() <=10*60) {
                                 cnt2++;
                                 newMessage += sortedList2.get(i).getKey()+" "+sortedList2.get(i).getValue()/60+"시간 "+sortedList2.get(i).getValue()%60+"분\n";
                             }
