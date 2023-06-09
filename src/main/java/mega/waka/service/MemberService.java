@@ -55,6 +55,9 @@ public class MemberService {
         this.sevendaysProjectRepository = sevendaysProjectRepository;
         this.sevenDaysEditorRepository = sevenDaysEditorRepository;
     }
+    public Member getMember(String name){
+        return memberRepository.findByName(name);
+    }
     public String Authentication_apiKey(String apiKey){ //Member Create 시 api key 검증
         RestTemplate restTemplate = new RestTemplate();
         String apiUrl ="https://wakatime.com/api/v1/users/current/summaries?range=last_7_days";

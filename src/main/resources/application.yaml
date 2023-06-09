@@ -5,6 +5,7 @@ spring:
       - application-jasypt.yaml
       - application-apidoc.yaml
       - application-redis.yaml
+      - application-discord.yaml
   main:
     allow-bean-definition-overriding: true
   jackson:
