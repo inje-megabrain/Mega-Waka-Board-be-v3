@@ -196,20 +196,19 @@ public class MemberService {
             set_Member_By_Language(findMember.get());
             set_Member_By_Editor(findMember.get());
             set_Member_By_Project(findMember.get());
-            languageList.clear();
-            editList.clear();
-            projectList.clear();
             responseInfoDto = new ResponseInfoDto().builder()
                 .name(findMember.get().getName())
-                .totalLanguages(findMember.get().getSevenlanguages())
-                .totalEditors(findMember.get().getSeveneditors())
-                .totalProejects(findMember.get().getSevenprojects())
+                .totalLanguages(findMember.get().getSevenlanguages().stream().distinct().toList())
+                .totalEditors(findMember.get().getSeveneditors().stream().distinct().toList())
+                .totalProejects(findMember.get().getSevenprojects().stream().distinct().toList())
                     .money(findMember.get().getMoney())
                     .oranization(findMember.get().getOrganization())
                     .imageURL(findMember.get().getImage())
                     .department(findMember.get().getDepartment())
-
                 .build();
+            languageList.clear();
+            editList.clear();
+            projectList.clear();
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
@@ -374,6 +373,7 @@ public class MemberService {
                         member.getSevenlanguages().get(i).setTime(languageList.get(key));
                         memberRepository.save(member);
                         flag = true;
+                        break;
                     }
                 }
                 if (flag == false) {
@@ -410,6 +410,7 @@ public class MemberService {
                         member.getSevenprojects().get(i).setTime(projectList.get(key));
                         memberRepository.save(member);
                         flag=true;
+                        break;
                     }
                 }
                 if(flag==false){
@@ -448,6 +449,7 @@ public class MemberService {
                         member.getSeveneditors().get(i).setTime(editList.get(key));
                         memberRepository.save(member);
                         flag=true;
+                        break;
                     }
                 }
                 if(flag==false){
