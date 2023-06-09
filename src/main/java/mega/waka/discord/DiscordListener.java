@@ -8,6 +8,8 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
+import net.dv8tion.jda.api.requests.restaction.MessageEditAction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -27,13 +29,17 @@ public class DiscordListener extends ListenerAdapter {
     public DiscordListener(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
     }
-
+    private String formatAsHyperlink(String text, String url) {
+        return "[" + text + "](" + url + ")";
+    }
     public void createMessage(MessageReceivedEvent event, String message){
         User user = event.getAuthor();
         String returnMessage = "";
-        String newMessage = "*******근무 시간 미달자 ******* \n";
+        String newMessage = "!!!!!***근무 시간 미달자 ***!!!! \n";
         EmbedBuilder embed = new EmbedBuilder();
-        embed.setFooter("와카보드 봇 https://dev.megabrain.kr/waka", "https://avatars.githubusercontent.com/inje-megabrain");
+        embed.addField("https://dev.megabrain.kr/waka", "", false);
+        embed.setThumbnail("https://avatars.githubusercontent.com/inje-megabrain");
+        embed.setFooter("메가브레인 와카 봇", "https://avatars.githubusercontent.com/inje-megabrain");
         switch(message){
             case "명령어" : returnMessage = "** 와카보드 봇 명령어 목록입니다.**\n waka! 전체순위 : 와카보드 전체 순위를 보여줍니다. \n waka! 개인순위 : 와카보드 개인 순위를 보여줍니다. \n waka! 명령어 : 와카보드 봇 명령어를 보여줍니다.";
             break;
@@ -48,18 +54,21 @@ public class DiscordListener extends ListenerAdapter {
                         int minute = Integer.parseInt(matcher.group(2));
                         memberMap.put(member.getName(),hour*60+minute);
                     }
+                    else memberMap.put(member.getName(),0);
                 }
                 List<Map.Entry<String,Integer>> sortedList = new ArrayList<>(memberMap.entrySet());
                 Collections.sort(sortedList, Map.Entry.comparingByValue(Comparator.reverseOrder()));
-                embed.setTitle(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))+" 기준 " +"와카보드 전체 순위");
+                embed.setTitle(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))+" 기준 " +"와카보드 전체 순위");
                 embed.setColor(Color.green);
                 int cnt=0;
                 for(int i=0;i<sortedList.size();i++){
                     if(sortedList.get(i).getValue() <=10*60){
                         cnt++;
-                        newMessage += (i+1)+"위 "+sortedList.get(i).getKey()+" "+sortedList.get(i).getValue()/60+"시간 "+sortedList.get(i).getValue()%60+"분\n";
+                        newMessage += (i+1)+" 등 - "+sortedList.get(i).getKey()+"\n -> "+sortedList.get(i).getValue()/60+"시간 "+sortedList.get(i).getValue()%60+"분\n";
                     }
-                    else returnMessage += (i+1)+"위 "+sortedList.get(i).getKey()+" "+sortedList.get(i).getValue()/60+"시간 "+sortedList.get(i).getValue()%60+"분\n";
+                    else if(sortedList.get(i).getValue() > 10*60)
+                        returnMessage += (i+1)+" 등 - "+sortedList.get(i).getKey()+"\n -> "+sortedList.get(i).getValue()/60+"시간 "+sortedList.get(i).getValue()%60+"분\n";
+                    else newMessage += (i+1)+" 등 - "+sortedList.get(i).getKey()+"\n -> "+0+" 시간 "+0+"분\n";
                 }
                 if(cnt==0) newMessage += "현재 근무 시간 미달자가 없습니다.\n";
                 embed.setDescription(returnMessage +"\n"+ newMessage);
@@ -101,15 +110,17 @@ public class DiscordListener extends ListenerAdapter {
                     int cnt2=0;
                     List<Map.Entry<String,Integer>> sortedList2 = new ArrayList<>(memberMap2.entrySet());
                     Collections.sort(sortedList2, Map.Entry.comparingByValue(Comparator.reverseOrder()));
-                    embed.setTitle(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))+" 기준 " +"와카보드 개인 순위");
+                    embed.setTitle(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))+" 기준 " +"와카보드 개인 순위");
                     embed.setColor(Color.green);
                     for(int i=0;i<sortedList2.size();i++){
                         if(sortedList2.get(i).getKey().equals(user.getName())){
                             if(sortedList2.get(i).getValue() <=10*60) {
                                 cnt2++;
-                                newMessage += sortedList2.get(i).getKey()+" "+sortedList2.get(i).getValue()/60+"시간 "+sortedList2.get(i).getValue()%60+"분\n";
+                                newMessage += i+1+" 등 - "+sortedList2.get(i).getKey()+"\n -> "+sortedList2.get(i).getValue()/60+"시간 "+sortedList2.get(i).getValue()%60+"분\n";
                             }
-                            else returnMessage += sortedList2.get(i).getKey()+" "+sortedList2.get(i).getValue()/60+"시간 "+sortedList2.get(i).getValue()%60+"분\n";
+                            else if(sortedList2.get(i).getValue() > 10*60)
+                                returnMessage += (i+1)+"등 - "+sortedList2.get(i).getKey()+"\n -> "+sortedList2.get(i).getValue()/60+"시간 "+sortedList2.get(i).getValue()%60+"분\n";
+                            else newMessage += (i+1)+" 등 - "+sortedList2.get(i).getKey()+"\n -> "+0+" 시간 "+0+"분\n";
                         }
                     }
                     if(cnt2==0) newMessage += user.getName() + "님은 근무 시간 미달자가 아닙니다.\n";
@@ -138,7 +149,7 @@ public class DiscordListener extends ListenerAdapter {
         String [] messageArray = message.getContentRaw().split(" ");
         if(messageArray[0].equals("waka!")){
              //944265427020812328, 1116650046797135992
-            if(!event.getChannel().getId().equals("944265427020812328")) return;
+            if(!event.getChannel().getId().equals("1116650046797135992")) return;
             String [] messageArgs = Arrays.copyOfRange(messageArray,1,messageArray.length);
             for(String msg : messageArgs){
                 createMessage(event,msg);
