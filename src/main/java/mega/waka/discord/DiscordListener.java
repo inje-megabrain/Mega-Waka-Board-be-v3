@@ -93,7 +93,6 @@ public class DiscordListener extends ListenerAdapter {
                     member = memberRepository.findByName(user.getName());
                 }
 
-
                 if(member ==null) returnMessage = "해당 멤버가 등록되지 않았습니다.";
                 else{
                     List<Member> memberList2 = memberRepository.findAll();
@@ -104,14 +103,16 @@ public class DiscordListener extends ListenerAdapter {
                         if(matcher.find()){
                             int hour = Integer.parseInt(matcher.group(1));
                             int minute = Integer.parseInt(matcher.group(2));
-                            memberMap2.put(member.getName(),hour*60+minute);
+                            memberMap2.put(member2.getName(),hour*60+minute);
                         }
+                        else memberMap2.put(member2.getName(),0);
                     }
                     int cnt2=0;
                     List<Map.Entry<String,Integer>> sortedList2 = new ArrayList<>(memberMap2.entrySet());
                     Collections.sort(sortedList2, Map.Entry.comparingByValue(Comparator.reverseOrder()));
                     embed.setTitle(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))+" 기준 " +"와카보드 개인 순위");
                     embed.setColor(Color.green);
+                    System.out.println(sortedList2.size());
                     for(int i=0;i<sortedList2.size();i++){
                         if(sortedList2.get(i).getKey().equals(user.getName())){
                             if(sortedList2.get(i).getValue() <=10*60) {
