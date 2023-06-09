@@ -56,6 +56,7 @@ public class DiscordListener extends ListenerAdapter {
                     returnMessage += (i+1)+"위 "+sortedList.get(i).getKey()+" "+sortedList.get(i).getValue()/60+"시간 "+sortedList.get(i).getValue()%60+"분\n";
                 }
                 embed.setDescription(returnMessage);
+                returnMessage = "현재 시간 기준 전체 순위입니다.";
             break;
             case "개인순위" :
                 Member member = memberRepository.findByName(user.getName().substring(2));
@@ -82,6 +83,7 @@ public class DiscordListener extends ListenerAdapter {
                         }
                     }
                     embed.setDescription(returnMessage);
+                    returnMessage = "현재 시간 기준 순위입니다.";
                 }
             break;
             default:
@@ -89,6 +91,7 @@ public class DiscordListener extends ListenerAdapter {
                 embed.setColor(Color.red);
                 returnMessage = "등록된 waka!명령어를 입력해주세요.";
                 embed.setDescription(returnMessage);
+                returnMessage = "명령어를 다시 입력해주세요.";
             break;
         }
         sendMessage(event,returnMessage,embed);
