@@ -8,10 +8,6 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
-import net.dv8tion.jda.api.requests.restaction.MessageEditAction;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.awt.*;
@@ -113,17 +109,17 @@ public class DiscordListener extends ListenerAdapter {
                     embed.setTitle(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))+" 기준 " +"와카보드 개인 순위");
                     embed.setColor(Color.green);
                     for(int i=0;i<sortedList2.size();i++){
-                        if(sortedList2.get(i).getKey().equals(user.getName())){
+                        if(sortedList2.get(i).getKey().equals(member.getName())){
                             if(sortedList2.get(i).getValue() <=10*60) {
                                 cnt2++;
-                                newMessage += i+1+" 등 - "+sortedList2.get(i).getKey()+"\n -> "+sortedList2.get(i).getValue()/60+"시간 "+sortedList2.get(i).getValue()%60+"분\n";
+                                newMessage += i+1+" 등 - "+member.getName()+"\n -> "+sortedList2.get(i).getValue()/60+"시간 "+sortedList2.get(i).getValue()%60+"분\n";
                             }
                             else if(sortedList2.get(i).getValue() > 10*60)
-                                returnMessage += (i+1)+"등 - "+sortedList2.get(i).getKey()+"\n -> "+sortedList2.get(i).getValue()/60+"시간 "+sortedList2.get(i).getValue()%60+"분\n";
-                            else newMessage += (i+1)+" 등 - "+sortedList2.get(i).getKey()+"\n -> "+0+" 시간 "+0+"분\n";
+                                returnMessage += (i+1)+"등 - "+member.getName()+"\n -> "+sortedList2.get(i).getValue()/60+"시간 "+sortedList2.get(i).getValue()%60+"분\n";
+                            else newMessage += (i+1)+" 등 - "+member.getName()+"\n -> "+0+" 시간 "+0+"분\n";
                         }
                     }
-                    if(cnt2==0) newMessage += user.getName() + "님은 근무 시간 미달자가 아닙니다.\n";
+                    if(cnt2==0) newMessage += member.getName() + "님은 근무 시간 미달자가 아닙니다.\n";
 
                     embed.setDescription(returnMessage +"\n"+ newMessage);
                     returnMessage = "현재 시간 기준 순위입니다.";
@@ -158,6 +154,7 @@ public class DiscordListener extends ListenerAdapter {
         }
         super.onMessageReceived(event);
     }
+
     private void sendMessage(MessageReceivedEvent event, String message,EmbedBuilder embedBuilder){
         TextChannel textChannel = event.getChannel().asTextChannel();
         textChannel.sendMessage(message).setEmbeds(embedBuilder.build()).queue();
