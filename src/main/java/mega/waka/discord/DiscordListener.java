@@ -3,7 +3,6 @@ package mega.waka.discord;
 import mega.waka.entity.Member;
 import mega.waka.repository.MemberRepository;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
@@ -25,9 +24,6 @@ import java.util.regex.Pattern;
 public class DiscordListener extends ListenerAdapter {
 
     private final MemberRepository memberRepository;
-    @Value("${discord.bot.channel}")
-    private String channelId;
-
     public DiscordListener(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
     }
@@ -133,14 +129,15 @@ public class DiscordListener extends ListenerAdapter {
     }
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
-        if(!event.getChannel().getId().equals(channelId)) return;
+
         User user = event.getAuthor();
-        TextChannel textChannel = event.getChannel().asTextChannel();
         Message message = event.getMessage();
 
         if(user.isBot()) return;
         String [] messageArray = message.getContentRaw().split(" ");
         if(messageArray[0].equals("waka!")){
+             //944265427020812328, 1116650046797135992
+            if(!event.getChannel().getId().equals("1116650046797135992")) return;
             String [] messageArgs = Arrays.copyOfRange(messageArray,1,messageArray.length);
             for(String msg : messageArgs){
                 createMessage(event,msg);
