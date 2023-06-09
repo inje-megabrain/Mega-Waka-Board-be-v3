@@ -32,6 +32,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class MemberService {
@@ -198,9 +199,9 @@ public class MemberService {
             set_Member_By_Project(findMember.get());
             responseInfoDto = new ResponseInfoDto().builder()
                 .name(findMember.get().getName())
-                .totalLanguages(findMember.get().getSevenlanguages().stream().distinct().toList())
-                .totalEditors(findMember.get().getSeveneditors().stream().distinct().toList())
-                .totalProejects(findMember.get().getSevenprojects().stream().distinct().toList())
+                .totalLanguages(findMember.get().getSevenlanguages().stream().distinct().collect(Collectors.toList()))
+                .totalEditors(findMember.get().getSeveneditors().stream().distinct().collect(Collectors.toList()))
+                .totalProejects(findMember.get().getSevenprojects().stream().distinct().collect(Collectors.toList()))
                     .money(findMember.get().getMoney())
                     .oranization(findMember.get().getOrganization())
                     .imageURL(findMember.get().getImage())
