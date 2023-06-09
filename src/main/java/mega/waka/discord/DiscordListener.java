@@ -50,7 +50,7 @@ public class DiscordListener extends ListenerAdapter {
                 }
                 List<Map.Entry<String,Integer>> sortedList = new ArrayList<>(memberMap.entrySet());
                 Collections.sort(sortedList, Map.Entry.comparingByValue(Comparator.reverseOrder()));
-                embed.setTitle(LocalDateTime.now().format(DateTimeFormatter.BASIC_ISO_DATE)+" 기준 " +"와카보드 전체 순위");
+                embed.setTitle(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))+" 기준 " +"와카보드 전체 순위");
                 embed.setColor(Color.green);
                 for(int i=0;i<sortedList.size();i++){
                     returnMessage += (i+1)+"위 "+sortedList.get(i).getKey()+" "+sortedList.get(i).getValue()/60+"시간 "+sortedList.get(i).getValue()%60+"분\n";
@@ -74,7 +74,7 @@ public class DiscordListener extends ListenerAdapter {
                     }
                     List<Map.Entry<String,Integer>> sortedList2 = new ArrayList<>(memberMap2.entrySet());
                     Collections.sort(sortedList2, Map.Entry.comparingByValue(Comparator.reverseOrder()));
-                    embed.setTitle(LocalDateTime.now().format(DateTimeFormatter.BASIC_ISO_DATE)+" 기준 " +"와카보드 개인 순위");
+                    embed.setTitle(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))+" 기준 " +"와카보드 개인 순위");
                     embed.setColor(Color.green);
                     for(int i=0;i<sortedList2.size();i++){
                         if(sortedList2.get(i).getKey().equals(user.getName().substring(2))){
