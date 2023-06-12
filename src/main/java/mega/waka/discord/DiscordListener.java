@@ -76,9 +76,9 @@ public class DiscordListener extends ListenerAdapter {
                 else if(user.getName().equals("jadru"))  member = memberRepository.findByName("박영건");
                 else if(user.getName().equals("김동현hry")) member = memberRepository.findByName("김동현");
                 else if(user.getName().equals("LeeByeongJin")) member = memberRepository.findByName("이병진");
-                else if(user.getName().equals("Rod12")) member = memberRepository.findByName("이욱진");
+                else if(user.getName().equals("ddeltas")) member = memberRepository.findByName("구본웅");
                 else if(user.getName().equals("jyh")) member = memberRepository.findByName("정용휘");
-                else if(user.getName().equals("23김우현")) member = memberRepository.findByName("김우현");
+                else if(user.getName().equals("gimuhyeon")) member = memberRepository.findByName("김우현");
                 else if(user.getName().equals("병석")) member = memberRepository.findByName("성병석");
                 else if(user.getName().equals("훈정이")) member = memberRepository.findByName("김훈정");
                 else if(user.getName().equals("보경")) member = memberRepository.findByName("문보경");
