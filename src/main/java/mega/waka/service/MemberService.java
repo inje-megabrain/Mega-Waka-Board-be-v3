@@ -191,7 +191,6 @@ public class MemberService {
             JSONArray languages = (JSONArray) data.get("languages");
             JSONArray editors = (JSONArray) data.get("editors");
             JSONArray projects = (JSONArray) data.get("projects");
-
             if(!languages.isEmpty() || !editors.isEmpty() || !projects.isEmpty() || languages!=null || editors!=null || projects!=null){
                 set_Language(languages);
                 set_Project(projects);
@@ -202,9 +201,9 @@ public class MemberService {
             set_Member_By_Project(findMember.get());
             responseInfoDto = new ResponseInfoDto().builder()
                 .name(findMember.get().getName())
-                .totalLanguages(findMember.get().getSevenlanguages())
-                .totalEditors(findMember.get().getSeveneditors())
-                .totalProejects(findMember.get().getSevenprojects())
+                .totalLanguages(Set.copyOf(findMember.get().getSevenlanguages()))
+                .totalEditors(Set.copyOf(findMember.get().getSeveneditors()))
+                .totalProejects(Set.copyOf(findMember.get().getSevenprojects()))
                     .money(findMember.get().getMoney())
                     .oranization(findMember.get().getOrganization())
                     .imageURL(findMember.get().getImage())
@@ -264,7 +263,6 @@ public class MemberService {
         moneyRepository.deleteAll();
         memberRepository.deleteAll();
     }
-
     private Map<String,String> set_Language(JSONArray languages){
         for(int j=0;j<languages.size();j++) {
             JSONObject index = (JSONObject) languages.get(j);
