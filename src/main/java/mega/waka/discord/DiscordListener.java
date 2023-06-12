@@ -195,7 +195,7 @@ public class DiscordListener extends ListenerAdapter {
         }
         List<Map.Entry<String,Integer>> sortedList = new ArrayList<>(memberMap.entrySet());
         Collections.sort(sortedList, Map.Entry.comparingByValue(Comparator.reverseOrder()));
-        String newMessage = "";
+        String newMessage = "!!!!!***근무 시간 미달자 ***!!!! \n";
         String returnMessage = "";
         int cnt=0;
         for(int i=0;i<sortedList.size();i++){
