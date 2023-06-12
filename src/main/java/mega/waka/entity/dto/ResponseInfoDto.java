@@ -12,7 +12,9 @@ import org.json.simple.JSONArray;
 import org.springframework.data.redis.core.RedisHash;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @AllArgsConstructor
@@ -21,11 +23,11 @@ import java.util.List;
 public class ResponseInfoDto {
     private String name;
     @Builder.Default
-    private List<SevenDaysEditor> totalEditors = new ArrayList<>();
+    private Set<SevenDaysEditor> totalEditors = new HashSet<>();
     @Builder.Default
-    private List<SevenDaysLanguage> totalLanguages = new ArrayList<>();
+    private Set<SevenDaysLanguage> totalLanguages = new HashSet<>();
     @Builder.Default
-    private List<SevenDaysProject> totalProejects = new ArrayList<>();
+    private Set<SevenDaysProject> totalProejects = new HashSet<>();
     private String oranization;
     private Money money;
     private String imageURL;

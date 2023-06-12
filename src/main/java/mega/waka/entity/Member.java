@@ -17,9 +17,7 @@ import mega.waka.entity.project.ThirtyDaysProject;
 import org.hibernate.annotations.BatchSize;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Getter
@@ -52,13 +50,13 @@ public class Member {
     private List<FourteenDaysEditor> fourtyDaysEditors = new ArrayList<>();
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     @BatchSize(size = 100)
-    private List<SevenDaysProject> sevenprojects = new ArrayList<>();
+    private Set<SevenDaysProject> sevenprojects = new HashSet<>();
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     @BatchSize(size = 100)
-    private List<SevenDaysLanguage> sevenlanguages = new ArrayList<>();
+    private Set<SevenDaysLanguage> sevenlanguages = new HashSet<>();
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     @BatchSize(size = 100)
-    private List<SevenDaysEditor> seveneditors = new ArrayList<>();
+    private Set<SevenDaysEditor> seveneditors = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     @BatchSize(size = 100)

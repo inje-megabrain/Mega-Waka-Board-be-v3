@@ -202,9 +202,9 @@ public class MemberService {
             set_Member_By_Project(findMember.get());
             responseInfoDto = new ResponseInfoDto().builder()
                 .name(findMember.get().getName())
-                .totalLanguages(findMember.get().getSevenlanguages().stream().distinct().collect(Collectors.toList()))
-                .totalEditors(findMember.get().getSeveneditors().stream().distinct().collect(Collectors.toList()))
-                .totalProejects(findMember.get().getSevenprojects().stream().distinct().collect(Collectors.toList()))
+                .totalLanguages(findMember.get().getSevenlanguages())
+                .totalEditors(findMember.get().getSeveneditors())
+                .totalProejects(findMember.get().getSevenprojects())
                     .money(findMember.get().getMoney())
                     .oranization(findMember.get().getOrganization())
                     .imageURL(findMember.get().getImage())
