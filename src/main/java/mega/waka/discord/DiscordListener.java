@@ -1,20 +1,30 @@
 package mega.waka.discord;
 
+import jakarta.validation.constraints.NotNull;
 import mega.waka.entity.Member;
 import mega.waka.repository.MemberRepository;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
 import java.awt.*;
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,9 +34,6 @@ public class DiscordListener extends ListenerAdapter {
     private final MemberRepository memberRepository;
     public DiscordListener(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
-    }
-    private String formatAsHyperlink(String text, String url) {
-        return "[" + text + "](" + url + ")";
     }
     public void createMessage(MessageReceivedEvent event, String message){
         User user = event.getAuthor();
@@ -135,6 +142,12 @@ public class DiscordListener extends ListenerAdapter {
         }
         sendMessage(event,returnMessage,embed);
     }
+
+    @Override
+    public void onReady(ReadyEvent event) {
+        sendToSchedule(event);
+    }
+
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
 
@@ -158,5 +171,57 @@ public class DiscordListener extends ListenerAdapter {
     private void sendMessage(MessageReceivedEvent event, String message,EmbedBuilder embedBuilder){
         TextChannel textChannel = event.getChannel().asTextChannel();
         textChannel.sendMessage(message).setEmbeds(embedBuilder.build()).queue();
+
     }
+
+    public void sendToSchedule(@NotNull ReadyEvent readyEvent){
+
+        LocalDateTime nextFriday = LocalDateTime.now()
+                .with(TemporalAdjusters.next(DayOfWeek.FRIDAY))
+                .withHour(12).withMinute(0).withSecond(0);
+        long initialDelay = LocalDateTime.now().until(nextFriday, ChronoUnit.SECONDS);
+
+        List<Member> memberList = memberRepository.findAll();
+        Map<String, Integer> memberMap = new HashMap<>();
+        for(Member member : memberList){
+            Pattern pattern = Pattern.compile("\\b(\\d+) hrs (\\d+) mins\\b");
+            Matcher matcher = pattern.matcher(member.getSevenDays());
+            if(matcher.find()){
+                int hour = Integer.parseInt(matcher.group(1));
+                int minute = Integer.parseInt(matcher.group(2));
+                memberMap.put(member.getName(),hour*60+minute);
+            }
+            else memberMap.put(member.getName(),0);
+        }
+        List<Map.Entry<String,Integer>> sortedList = new ArrayList<>(memberMap.entrySet());
+        Collections.sort(sortedList, Map.Entry.comparingByValue(Comparator.reverseOrder()));
+        String newMessage = "";
+        String returnMessage = "";
+        int cnt=0;
+        for(int i=0;i<sortedList.size();i++){
+            if(sortedList.get(i).getValue() <=10*60){
+                cnt++;
+                newMessage += (i+1)+" 등 - "+sortedList.get(i).getKey()+"\n -> "+sortedList.get(i).getValue()/60+"시간 "+sortedList.get(i).getValue()%60+"분\n";
+            }
+            else if(sortedList.get(i).getValue() > 10*60)
+                returnMessage += (i+1)+" 등 - "+sortedList.get(i).getKey()+"\n -> "+sortedList.get(i).getValue()/60+"시간 "+sortedList.get(i).getValue()%60+"분\n";
+            else newMessage += (i+1)+" 등 - "+sortedList.get(i).getKey()+"\n -> "+0+" 시간 "+0+"분\n";
+        }
+        if(cnt==0) newMessage += "현재 근무 시간 미달자가 없습니다.\n";
+        String message = "현재 기준 순위입니다. \n"+returnMessage + "\n" + newMessage;
+        ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
+        scheduledExecutorService.scheduleAtFixedRate(()->{
+            readyEvent.getJDA().getTextChannelById("1090659127417638943").sendMessage("이번주 와카타임 랭킹입니다. !").setEmbeds(
+                    new EmbedBuilder().addField("https://dev.app.megabrain.kr/waka", "", false)
+                            .setColor(Color.green)
+                            .setTitle(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))+" 기준 " +"와카보드 개인 순위")
+                            .setThumbnail("https://avatars.githubusercontent.com/inje-megabrain")
+                            .setFooter("메가브레인 와카 봇", "https://avatars.githubusercontent.com/inje-megabrain")
+                            .setDescription(message)
+                            .build()
+            ).queue();
+        },initialDelay,7, TimeUnit.DAYS);
+    }
+
+
 }
