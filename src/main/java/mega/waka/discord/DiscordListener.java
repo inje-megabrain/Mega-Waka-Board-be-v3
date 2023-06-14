@@ -40,7 +40,7 @@ public class DiscordListener extends ListenerAdapter {
         String returnMessage = "";
         String newMessage = "!!!!!***근무 시간 미달자 ***!!!! \n";
         EmbedBuilder embed = new EmbedBuilder();
-        embed.addField("https://dev.app.megabrain.kr/waka", "", false);
+        embed.addField("https://megabrain.kr/waka", "", false);
         embed.setThumbnail("https://avatars.githubusercontent.com/inje-megabrain");
         embed.setFooter("메가브레인 와카 봇", "https://avatars.githubusercontent.com/inje-megabrain");
         switch(message){
@@ -79,19 +79,20 @@ public class DiscordListener extends ListenerAdapter {
             break;
             case "개인순위" :
                 Member member;
-                if(user.getName().equals("웅이")) member = memberRepository.findByName("신종웅");
+                if(user.getName().equals("_ung_")) member = memberRepository.findByName("신종웅");
                 else if(user.getName().equals("jadru"))  member = memberRepository.findByName("박영건");
-                else if(user.getName().equals("김동현hry")) member = memberRepository.findByName("김동현");
+                else if(user.getName().equals("haroya")) member = memberRepository.findByName("김동현");
                 else if(user.getName().equals("LeeByeongJin")) member = memberRepository.findByName("이병진");
                 else if(user.getName().equals("ddeltas")) member = memberRepository.findByName("구본웅");
                 else if(user.getName().equals("jyh")) member = memberRepository.findByName("정용휘");
                 else if(user.getName().equals("gimuhyeon")) member = memberRepository.findByName("김우현");
-                else if(user.getName().equals("병석")) member = memberRepository.findByName("성병석");
+                else if(user.getName().equals("byeongseok")) member = memberRepository.findByName("성병석");
                 else if(user.getName().equals("훈정이")) member = memberRepository.findByName("김훈정");
                 else if(user.getName().equals("보경")) member = memberRepository.findByName("문보경");
                 else if(user.getName().equals("Zn")) member = memberRepository.findByName("심아연");
                 else if(user.getName().equals("Rod12")) member = memberRepository.findByName("이욱진");
                 else if(user.getName().equals("재민")) member = memberRepository.findByName("김재민");
+                else if(user.getName().equals("hongjihyeon")) member = memberRepository.findByName("홍지현");
                 else{
                     member = memberRepository.findByName(user.getName());
                 }
@@ -212,7 +213,7 @@ public class DiscordListener extends ListenerAdapter {
         ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
         scheduledExecutorService.scheduleAtFixedRate(()->{
             readyEvent.getJDA().getTextChannelById("1090659127417638943").sendMessage("이번주 와카타임 랭킹입니다. !").setEmbeds(
-                    new EmbedBuilder().addField("https://dev.app.megabrain.kr/waka", "", false)
+                    new EmbedBuilder().addField("https://megabrain.kr/waka", "", false)
                             .setColor(Color.green)
                             .setTitle(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))+" 기준 " +"와카보드 개인 순위")
                             .setThumbnail("https://avatars.githubusercontent.com/inje-megabrain")
