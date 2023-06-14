@@ -79,6 +79,7 @@ public class DiscordListener extends ListenerAdapter {
             break;
             case "개인순위" :
                 Member member;
+                newMessage ="";
                 if(user.getName().equals("_ung_")) member = memberRepository.findByName("신종웅");
                 else if(user.getName().equals("jadru"))  member = memberRepository.findByName("박영건");
                 else if(user.getName().equals("haroya")) member = memberRepository.findByName("김동현");
@@ -128,6 +129,7 @@ public class DiscordListener extends ListenerAdapter {
                         }
                     }
                     if(cnt2==0) newMessage += member.getName() + "님은 근무 시간 미달자가 아닙니다.\n";
+                    else newMessage += member.getName() + "님은 근무 시간 미달자입니다.\n";
 
                     embed.setDescription(returnMessage +"\n"+ newMessage);
                     returnMessage = "현재 시간 기준 순위입니다.";
