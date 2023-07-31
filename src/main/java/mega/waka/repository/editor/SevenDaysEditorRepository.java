@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SevenDaysEditorRepository extends JpaRepository<SevenDaysEditor, Long> {
+
+    SevenDaysEditor findByName(String name);
 }

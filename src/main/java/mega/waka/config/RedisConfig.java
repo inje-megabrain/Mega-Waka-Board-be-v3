@@ -3,7 +3,6 @@ package mega.waka.config;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import mega.waka.entity.redis.SevenDaysResultHistory;
-import mega.waka.entity.redis.ThirtyDaysResultHistory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -58,17 +57,5 @@ public class RedisConfig {
         redisTemplate.setHashValueSerializer(new Jackson2JsonRedisSerializer<>(SevenDaysResultHistory.class));
         redisTemplate.setConnectionFactory(redisConnectionFactory());
         return redisTemplate;
-    }
-
-    @Bean
-    @Qualifier("redisTemplateThirtyDays")
-    public RedisTemplate<String, ThirtyDaysResultHistory> redisTemplateThirtyDays() { // RedisTemplate을 Bean으로 등록
-        RedisTemplate<String, ThirtyDaysResultHistory> redisTemplateThirtyDays = new RedisTemplate<>();
-        redisTemplateThirtyDays.setKeySerializer(new StringRedisSerializer());
-        redisTemplateThirtyDays.setValueSerializer(new Jackson2JsonRedisSerializer<>(ThirtyDaysResultHistory.class));
-        redisTemplateThirtyDays.setHashKeySerializer(new StringRedisSerializer());
-        redisTemplateThirtyDays.setHashValueSerializer(new Jackson2JsonRedisSerializer<>(ThirtyDaysResultHistory.class));
-        redisTemplateThirtyDays.setConnectionFactory(connectionFactory());
-        return redisTemplateThirtyDays;
     }
 }

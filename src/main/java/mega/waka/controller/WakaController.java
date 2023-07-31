@@ -16,18 +16,12 @@ import java.util.UUID;
 @RequestMapping("/waka")
 public class WakaController {
 
-    private final FourteenDaysWakaService wakaTimeService;
-    private final OneDaysWakaService oneDaysWakaService;
     private final SevenDaysWakaService sevenDaysWakaService;
-    private final ThirtyDaysWakaService thirtyDaysWakaService;
     private final RedisUtil redisUtil;
     private final MemberService memberService;
 
-    public WakaController(FourteenDaysWakaService fourtyDaysWakaService, OneDaysWakaService oneDaysWakaService, SevenDaysWakaService sevenDaysWakaService, ThirtyDaysWakaService thirtyDaysWakaService, RedisUtil redisUtil, MemberService memberService) {
-        this.wakaTimeService = fourtyDaysWakaService;
-        this.oneDaysWakaService = oneDaysWakaService;
+    public WakaController(SevenDaysWakaService sevenDaysWakaService,RedisUtil redisUtil, MemberService memberService) {
         this.sevenDaysWakaService = sevenDaysWakaService;
-        this.thirtyDaysWakaService = thirtyDaysWakaService;
         this.redisUtil = redisUtil;
         this.memberService = memberService;
     }
@@ -60,7 +54,7 @@ public class WakaController {
         }
     }
     @GetMapping("/members/{id}")
-    @Operation(summary = "멤버 상세 조회 API", description = "멤버를 상세 조회합니다. date =7 or 30")
+    @Operation(summary = "멤버 상세 조회 API", description = "멤버를 상세 조회합니다. date =7")
     public ResponseEntity getMember_Info(@PathVariable String id, @RequestParam int date){
         try{
             if(date==7){
@@ -77,19 +71,13 @@ public class WakaController {
         }
     }
     @PostMapping("/members")
-    @Operation(summary = "수동 api 갱신 API", description = "코딩 시간을 수동 갱신합니다. date = 1,7,14,30")
+    @Operation(summary = "수동 api 갱신 API", description = "코딩 시간을 수동 갱신합니다. date = 7")
     public ResponseEntity getMemberTimeByApiKey(@RequestParam int date){
         try{
-            if(date ==1) oneDaysWakaService.update_OneDays();
-            else if(date ==30) {
-                thirtyDaysWakaService.update_ThirtyDays();
-                //redisUtil.save_Redis_ThirtyDays();
-            }
-            else if(date ==7) {
+            if(date ==7) {
                 sevenDaysWakaService.update_SevenDays();
                 //redisUtil.save_Redis_SevenDays();
             }
-            else if(date ==14) wakaTimeService.update_FourtyDays();
             else return new ResponseEntity("date는 1, 7, 14, 30 중 하나여야 합니다.", HttpStatus.BAD_REQUEST);
             return new ResponseEntity("susccess", HttpStatus.OK);
         }catch (RuntimeException e){
@@ -117,21 +105,4 @@ public class WakaController {
             return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
-    @DeleteMapping("/members")
-    @Operation(summary = "delete all")
-    public ResponseEntity delete_All_Member(){
-        memberService.delete_all();
-        return new ResponseEntity("success",HttpStatus.OK);
-    }
-    @DeleteMapping("/member/{id}")
-    @Operation(summary = "delete member sevendays")
-    public ResponseEntity deleteMemberSevendays(@PathVariable String id){
-        try{
-            memberService.deleteSevenDays(UUID.fromString(id));
-            return new ResponseEntity("success",HttpStatus.OK);
-        }catch (RuntimeException e){
-            return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-    }
-
 }

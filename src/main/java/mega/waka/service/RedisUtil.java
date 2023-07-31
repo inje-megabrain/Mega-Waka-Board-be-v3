@@ -2,7 +2,6 @@ package mega.waka.service;
 
 import mega.waka.entity.Member;
 import mega.waka.entity.redis.SevenDaysResultHistory;
-import mega.waka.entity.redis.ThirtyDaysResultHistory;
 import mega.waka.repository.MemberRepository;
 
 import org.springframework.data.redis.core.RedisTemplate;
@@ -19,13 +18,11 @@ import java.util.UUID;
 public class RedisUtil {
     private final MemberRepository memberRepository;
     private final RedisTemplate<String,SevenDaysResultHistory> redisTemplate;
-    private final RedisTemplate<String,ThirtyDaysResultHistory> redisTemplateThirtyDays;
 
 
-    public RedisUtil(MemberRepository memberRepository, RedisTemplate<String, SevenDaysResultHistory> redisTemplate, RedisTemplate<String, ThirtyDaysResultHistory> redisTemplateThirtyDays) {
+    public RedisUtil(MemberRepository memberRepository, RedisTemplate<String, SevenDaysResultHistory> redisTemplate) {
         this.memberRepository = memberRepository;
         this.redisTemplate = redisTemplate;
-        this.redisTemplateThirtyDays = redisTemplateThirtyDays;
     }
 
     public void save_Redis_SevenDays() {
@@ -43,7 +40,7 @@ public class RedisUtil {
         }
 
     }
-    public void save_Redis_ThirtyDays(){
+    /*public void save_Redis_ThirtyDays(){
         List<Member> members = memberRepository.findAll();
         for(Member member : members){
             ThirtyDaysResultHistory thirtyDaysResultHistory = new ThirtyDaysResultHistory();
@@ -56,7 +53,7 @@ public class RedisUtil {
             Duration expiration = Duration.ofMinutes(10);
             valueOperations.set(member.getName(),thirtyDaysResultHistory,expiration);
         }
-    }
+    }*/
     public Optional<SevenDaysResultHistory> get_Redis_SevenDays(UUID id){
         Optional<Member> member = memberRepository.findById(id);
         member.orElseThrow(()->{
@@ -73,7 +70,7 @@ public class RedisUtil {
         }else return Optional.ofNullable(values.get(member.get().getName()));
 
     }
-    public Optional<ThirtyDaysResultHistory> get_Redis_ThirtyDays(UUID id){
+    /*public Optional<ThirtyDaysResultHistory> get_Redis_ThirtyDays(UUID id){
         Optional<Member> member = memberRepository.findById(id);
         member.orElseThrow(()->{
             return new IllegalArgumentException("해당 유저가 없습니다.");
@@ -87,6 +84,6 @@ public class RedisUtil {
             thirtyDaysResultHistory.setId(String.valueOf(member.get().getId()));
             return Optional.ofNullable(thirtyDaysResultHistory);
         }else return Optional.ofNullable(valueOperations.get(member.get().getName()));
-    }
+    }*/
 
 }
