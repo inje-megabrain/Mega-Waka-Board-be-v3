@@ -340,13 +340,17 @@ public class MemberService {
                 String name = "";
                 for (String key : languageList.keySet()) {
                     name = key;
-                    if (member.getSevenlanguages().get(i).getName().equals(key)) {
-                        member.getSevenlanguages().remove(i);
-                        SevenDaysLanguage language = sevenDaysLanguageRepository.findByName(key);
-                        language.setTime(languageList.get(key));
-                        member.getSevenlanguages().add(language);
-                        flag = true;
-                        break;
+                    if (member.getSevenlanguages().get(i).getName().equals(key)){
+                        if (member.getSevenlanguages().get(i).getTime().equals(languageList.get(key))) {
+                            flag = true;
+                            break;
+                        } else {
+                            SevenDaysLanguage language = sevenDaysLanguageRepository.findByName(key);
+                            language.setTime(languageList.get(key));
+                            sevenDaysLanguageRepository.save(language);
+                            flag = true;
+                            break;
+                        }
                     }
                 }
                 if (flag == false) {
@@ -378,12 +382,16 @@ public class MemberService {
                 for(String key : projectList.keySet()){
                     name = key;
                     if(member.getSevenprojects().get(i).getName().equals(key)){
-                        member.getSevenprojects().remove(i);
-                        SevenDaysProject project = sevendaysProjectRepository.findByName(key);
-                        project.setTime(projectList.get(key));
-                        member.getSevenprojects().add(project);
-                        flag=true;
-                        break;
+                        if (member.getSevenprojects().get(i).getTime().equals(projectList.get(key))) {
+                            flag = true;
+                            break;
+                        } else {
+                            SevenDaysProject project = sevendaysProjectRepository.findByName(key);
+                            project.setTime(projectList.get(key));
+                            sevendaysProjectRepository.save(project);
+                            flag = true;
+                            break;
+                        }
                     }
                 }
                 if(flag==false){
@@ -415,13 +423,16 @@ public class MemberService {
                 for(String key : editList.keySet()){
                     name = key;
                     if(member.getSeveneditors().get(i).getName().equals(key)){
-                        member.getSeveneditors().remove(i);
-                        SevenDaysEditor editor = sevenDaysEditorRepository.findByName(key);
-                        editor.setTime(editList.get(key));
-                        member.getSeveneditors().add(editor);
-                        memberRepository.save(member);
-                        flag=true;
-                        break;
+                        if (member.getSeveneditors().get(i).getTime().equals(languageList.get(key))) {
+                            flag = true;
+                            break;
+                        } else {
+                            SevenDaysEditor editor = sevenDaysEditorRepository.findByName(key);
+                            editor.setTime(editList.get(key));
+                            sevenDaysEditorRepository.save(editor);
+                            flag = true;
+                            break;
+                        }
                     }
                 }
                 if(flag==false){
