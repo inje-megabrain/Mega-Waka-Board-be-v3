@@ -330,24 +330,25 @@ public class MemberService {
                 SevenDaysLanguage language = new SevenDaysLanguage().builder()
                         .name(key)
                         .time(languageList.get(key))
+                        .member(member)
                         .build();
                 member.getSevenlanguages().add(language);
             }
             memberRepository.save(member);
         } else {
-            for (int i = 0; i < member.getSevenlanguages().size(); i++) {
+            List<SevenDaysLanguage> languages = sevenDaysLanguageRepository.findByMemberId(member.getId());
+            for (int i = 0; i < languages.size(); i++) {
                 boolean flag = false;
                 String name = "";
                 for (String key : languageList.keySet()) {
                     name = key;
-                    if (member.getSevenlanguages().get(i).getName().equals(key)){
-                        if (member.getSevenlanguages().get(i).getTime().equals(languageList.get(key))) {
+                    if (languages.get(i).getName().equals(key)){
+                        if (languages.get(i).getTime().equals(languageList.get(key))) {
                             flag = true;
                             break;
                         } else {
-                            SevenDaysLanguage language = sevenDaysLanguageRepository.findByName(key);
-                            language.setTime(languageList.get(key));
-                            sevenDaysLanguageRepository.save(language);
+                            languages.get(i).setTime(languageList.get(key));
+                            sevenDaysLanguageRepository.save(languages.get(i));
                             flag = true;
                             break;
                         }
@@ -357,6 +358,7 @@ public class MemberService {
                     SevenDaysLanguage language = new SevenDaysLanguage().builder()
                             .name(name)
                             .time(languageList.get(name))
+                            .member(member)
                             .build();
                     member.getSevenlanguages().add(language);
                 }
@@ -370,27 +372,30 @@ public class MemberService {
                 SevenDaysProject project = new SevenDaysProject().builder()
                         .name(key)
                         .time(projectList.get(key))
+                        .member(member)
                         .build();
                 member.getSevenprojects().add(project);
             }
             memberRepository.save(member);
         }
         else{
-            for(int i=0; i<member.getSevenprojects().size();i++){
+            List<SevenDaysProject> projects = sevendaysProjectRepository.findByMemberId(member.getId());
+            for(int i=0; i<projects.size();i++){
                 boolean flag = false;
                 String name="";
                 for(String key : projectList.keySet()){
                     name = key;
                     if(member.getSevenprojects().get(i).getName().equals(key)){
-                        if (member.getSevenprojects().get(i).getTime().equals(projectList.get(key))) {
-                            flag = true;
-                            break;
-                        } else {
-                            SevenDaysProject project = sevendaysProjectRepository.findByName(key);
-                            project.setTime(projectList.get(key));
-                            sevendaysProjectRepository.save(project);
-                            flag = true;
-                            break;
+                        if(projects.get(i).getName().equals(key)){
+                            if (projects.get(i).getTime().equals(projectList.get(key))) {
+                                flag = true;
+                                break;
+                            } else {
+                                projects.get(i).setTime(projectList.get(key));
+                                sevendaysProjectRepository.save(projects.get(i));
+                                flag = true;
+                                break;
+                            }
                         }
                     }
                 }
@@ -398,6 +403,7 @@ public class MemberService {
                     SevenDaysProject project = new SevenDaysProject().builder()
                             .name(name)
                             .time(projectList.get(name))
+                            .member(member)
                             .build();
                     member.getSevenprojects().add(project);
                 }
@@ -411,25 +417,26 @@ public class MemberService {
                 SevenDaysEditor editor = new SevenDaysEditor().builder()
                         .name(key)
                         .time(editList.get(key))
+                        .member(member)
                         .build();
                 member.getSeveneditors().add(editor);
             }
             memberRepository.save(member);
         }
         else{
-            for(int i=0; i<member.getSeveneditors().size();i++){
+            List<SevenDaysEditor> editors = sevenDaysEditorRepository.findByMemberId(member.getId());
+            for(int i=0; i<editors.size();i++){
                 boolean flag = false;
                 String name="";
                 for(String key : editList.keySet()){
                     name = key;
-                    if(member.getSeveneditors().get(i).getName().equals(key)){
-                        if (member.getSeveneditors().get(i).getTime().equals(languageList.get(key))) {
+                    if(editors.get(i).getName().equals(key)){
+                        if (editors.get(i).getTime().equals(editList.get(key))) {
                             flag = true;
                             break;
                         } else {
-                            SevenDaysEditor editor = sevenDaysEditorRepository.findByName(key);
-                            editor.setTime(editList.get(key));
-                            sevenDaysEditorRepository.save(editor);
+                            editors.get(i).setTime(editList.get(key));
+                            sevenDaysEditorRepository.save(editors.get(i));
                             flag = true;
                             break;
                         }
@@ -439,6 +446,7 @@ public class MemberService {
                     SevenDaysEditor editor = new SevenDaysEditor().builder()
                             .name(name)
                             .time(editList.get(name))
+                            .member(member)
                             .build();
                     member.getSeveneditors().add(editor);
                 }

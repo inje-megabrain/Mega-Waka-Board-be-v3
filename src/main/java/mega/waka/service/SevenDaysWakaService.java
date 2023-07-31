@@ -70,7 +70,6 @@ public class SevenDaysWakaService {
                 JSONParser parser = new JSONParser();
                 JSONObject jsonObject = (JSONObject) parser.parse(responseData);
                 JSONObject cumulative_total  = (JSONObject) jsonObject.get("cumulative_total");
-                System.out.println("cumulative_total = " + cumulative_total);
                 member.setSevenDays(cumulative_total.get("text").toString());
 
                 memberRepository.save(member);

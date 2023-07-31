@@ -1,10 +1,9 @@
 package mega.waka.entity.project;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.*;
+import mega.waka.entity.Member;
 
 @Getter
 @Setter
@@ -16,8 +15,11 @@ public class SevenDaysProject {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
-    String name;
-    String time;
-
+    private Long id;
+    private String name;
+    private String time;
+    @JsonIgnore
+    @JoinColumn(name = "member_id")
+    @ManyToOne
+    private Member member;
 }

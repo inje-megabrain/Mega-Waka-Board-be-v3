@@ -19,6 +19,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class Member {
     @Id
+    @Column(name ="member_id")
     private UUID id;
     private String name;
     private String organization;
@@ -27,13 +28,13 @@ public class Member {
     private String image;
     private String department;
 
-    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,orphanRemoval = true,mappedBy = "member")
     @BatchSize(size = 100)
     private List<SevenDaysProject> sevenprojects = new ArrayList<>();
-    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,orphanRemoval = true,mappedBy = "member")
     @BatchSize(size = 100)
     private List<SevenDaysLanguage> sevenlanguages = new ArrayList<>();
-    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,orphanRemoval = true,mappedBy = "member")
     @BatchSize(size = 100)
     private List<SevenDaysEditor> seveneditors = new ArrayList<>();
 
