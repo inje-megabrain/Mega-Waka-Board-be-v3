@@ -361,7 +361,6 @@ public class MemberService {
                             .member(member)
                             .build();
                     member.getSevenlanguages().add(language);
-                    memberRepository.save(member);
                 }
             }
             memberRepository.save(member);
@@ -407,7 +406,6 @@ public class MemberService {
                             .member(member)
                             .build();
                     member.getSevenprojects().add(project);
-                    memberRepository.save(member);
                 }
             }
             memberRepository.save(member);
@@ -451,7 +449,6 @@ public class MemberService {
                             .member(member)
                             .build();
                     member.getSeveneditors().add(editor);
-                    memberRepository.save(member);
                 }
             }
             memberRepository.save(member);
