@@ -38,10 +38,6 @@ public class MemberService {
     private final SevendaysProjectRepository sevendaysProjectRepository;
     private final SevenDaysEditorRepository sevenDaysEditorRepository;
 
-    private Map<String,String> languageList = new HashMap<>();
-    private Map<String,String> projectList = new HashMap<>();
-    private Map<String,String> editList = new HashMap<>();
-
     public MemberService(MemberRepository memberRepository,
                          MoneyRepository moneyRepository, SevenDaysLanguageRepository sevenDaysLanguageRepository,
                          SevendaysProjectRepository sevendaysProjectRepository, SevenDaysEditorRepository sevenDaysEditorRepository) {
@@ -134,12 +130,12 @@ public class MemberService {
             JSONParser parser = new JSONParser();
             JSONObject jsonObject = (JSONObject) parser.parse(responseData);
             JSONArray data = (JSONArray) jsonObject.get("data");
-            for(int i=0;i<data.size();i++){
-                JSONObject object = (JSONObject) data.get(i);
-                JSONObject range = (JSONObject) object.get("range");
-                String date = range.get("date").toString();
-                JSONArray languages = (JSONArray) object.get("languages");
-                JSONArray projects = (JSONArray) object.get("projects");
+                for(int i=0;i<data.size();i++){
+                    JSONObject object = (JSONObject) data.get(i);
+                    JSONObject range = (JSONObject) object.get("range");
+                    String date = range.get("date").toString();
+                    JSONArray languages = (JSONArray) object.get("languages");
+                    JSONArray projects = (JSONArray) object.get("projects");
                 JSONArray editors = (JSONArray) object.get("editors");
 
                 ResponseSummariesDto dto = new ResponseSummariesDto().builder()
@@ -157,6 +153,9 @@ public class MemberService {
     @Transactional
     public ResponseInfoDto get_Member_info_day(String id){ // 멤버 상세 조회
         Optional<Member> findMember = memberRepository.findById(UUID.fromString(id));
+        Map<String,String> languageList = new HashMap<>();
+        Map<String,String> projectList = new HashMap<>();
+        Map<String,String> editList = new HashMap<>();
         findMember.orElseThrow(()->{
             throw new IllegalArgumentException("해당하는 멤버가 없습니다.");
         });
@@ -185,26 +184,25 @@ public class MemberService {
             JSONArray editors = (JSONArray) data.get("editors");
             JSONArray projects = (JSONArray) data.get("projects");
             if(!languages.isEmpty() || !editors.isEmpty() || !projects.isEmpty() || languages!=null || editors!=null || projects!=null){
-                set_Language(languages);
-                set_Project(projects);
-                set_Editor(editors);
+                languageList = set_Language(languages);
+                projectList = set_Project(projects);
+                editList = set_Editor(editors);
             }
-            set_Member_By_Language(findMember.get());
-            set_Member_By_Editor(findMember.get());
-            set_Member_By_Project(findMember.get());
+            set_Member_By_Language(findMember.get(),languageList);
+            set_Member_By_Editor(findMember.get(),editList);
+            set_Member_By_Project(findMember.get(),projectList);
+
             responseInfoDto = new ResponseInfoDto().builder()
                 .name(findMember.get().getName())
-                .totalLanguages(Set.copyOf(findMember.get().getSevenlanguages()))
-                .totalEditors(Set.copyOf(findMember.get().getSeveneditors()))
-                .totalProejects(Set.copyOf(findMember.get().getSevenprojects()))
+                .totalLanguages(findMember.get().getSevenlanguages())
+                .totalEditors(findMember.get().getSeveneditors())
+                .totalProejects(findMember.get().getSevenprojects())
                     .money(findMember.get().getMoney())
                     .oranization(findMember.get().getOrganization())
                     .imageURL(findMember.get().getImage())
                     .department(findMember.get().getDepartment())
                 .build();
-            languageList.clear();
-            editList.clear();
-            projectList.clear();
+
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
@@ -234,6 +232,7 @@ public class MemberService {
         }
     }
     private Map<String,String> set_Language(JSONArray languages){
+        Map<String,String> languageList = new HashMap<>();
         for(int j=0;j<languages.size();j++) {
             JSONObject index = (JSONObject) languages.get(j);
             String name = (String) index.get("name");
@@ -263,7 +262,7 @@ public class MemberService {
         return languageList;
     }
     private Map<String,String> set_Project(JSONArray projects){
-
+        Map<String,String> projectList = new HashMap<>();
         for(int j=0;j<projects.size();j++) {
             JSONObject index = (JSONObject) projects.get(j);
             String name = (String) index.get("name");
@@ -294,7 +293,7 @@ public class MemberService {
 
     }
     private Map<String,String> set_Editor(JSONArray editor){
-
+        Map<String,String> editList = new HashMap<>();
         for(int j=0;j<editor.size();j++) {
             JSONObject index = (JSONObject) editor.get(j);
             String name = (String) index.get("name");
@@ -324,7 +323,7 @@ public class MemberService {
         return editList;
 
     }
-    private void set_Member_By_Language(Member member) {
+    private void set_Member_By_Language(Member member,Map<String,String> languageList) {
         if (member.getSevenlanguages().size() == 0) { //최초 등록시
             for (String key : languageList.keySet()) {
                 SevenDaysLanguage language = new SevenDaysLanguage().builder()
@@ -366,7 +365,7 @@ public class MemberService {
             memberRepository.save(member);
         }
     }
-    private void set_Member_By_Project(Member member) {
+    private void set_Member_By_Project(Member member,Map<String,String> projectList) {
         if(member.getSevenprojects().size()==0){
             for (String key : projectList.keySet()) {
                 SevenDaysProject project = new SevenDaysProject().builder()
@@ -411,7 +410,7 @@ public class MemberService {
             memberRepository.save(member);
         }
     }
-    private void set_Member_By_Editor(Member member) {
+    private void set_Member_By_Editor(Member member,Map<String,String> editList) {
         if(member.getSeveneditors().size()==0){
             for (String key : editList.keySet()) {
                 SevenDaysEditor editor = new SevenDaysEditor().builder()

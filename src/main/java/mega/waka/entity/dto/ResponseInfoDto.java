@@ -23,11 +23,11 @@ import java.util.Set;
 public class ResponseInfoDto {
     private String name;
     @Builder.Default
-    private Set<SevenDaysEditor> totalEditors = new HashSet<>();
+    private List<SevenDaysEditor> totalEditors = new ArrayList<>();
     @Builder.Default
-    private Set<SevenDaysLanguage> totalLanguages = new HashSet<>();
+    private List<SevenDaysLanguage> totalLanguages = new ArrayList<>();
     @Builder.Default
-    private Set<SevenDaysProject> totalProejects = new HashSet<>();
+    private List<SevenDaysProject> totalProejects = new ArrayList<>();
     private String oranization;
     private Money money;
     private String imageURL;
