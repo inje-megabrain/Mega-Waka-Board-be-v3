@@ -15,6 +15,7 @@ import mega.waka.repository.editor.SevenDaysEditorRepository;
 import mega.waka.repository.language.SevenDaysLanguageRepository;
 import mega.waka.repository.project.SevendaysProjectRepository;
 import org.hibernate.Session;
+import org.intellij.lang.annotations.Language;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -323,135 +324,102 @@ public class MemberService {
         return editList;
 
     }
-    private void set_Member_By_Language(Member member,Map<String,String> languageList) {
-        if (member.getSevenlanguages().size() == 0) { //최초 등록시
-            for (String key : languageList.keySet()) {
-                SevenDaysLanguage language = new SevenDaysLanguage().builder()
-                        .name(key)
-                        .time(languageList.get(key))
-                        .member(member)
+    //TODO 중복 제거 어떻게 할지.. 현재 로직은 너무 복잡함.
+    private void set_Member_By_Language(Member addLanguageMember,Map<String,String> languageList) {
+        List<SevenDaysLanguage> languages = sevenDaysLanguageRepository.findByMemberId(addLanguageMember.getId());
+        if(languages.isEmpty()){
+            for(String languageName : languageList.keySet()){
+                SevenDaysLanguage createLanguage = new SevenDaysLanguage().builder()
+                        .name(languageName)
+                        .time(languageList.get(languageName))
+                        .member(addLanguageMember)
                         .build();
-                member.getSevenlanguages().add(language);
+                addLanguageMember.getSevenlanguages().add(createLanguage);
             }
-            memberRepository.save(member);
-        } else {
-            List<SevenDaysLanguage> languages = sevenDaysLanguageRepository.findByMemberId(member.getId());
-            for (int i = 0; i < languages.size(); i++) {
-                boolean flag = false;
-                String name = "";
-                for (String key : languageList.keySet()) {
-                    name = key;
-                    if (languages.get(i).getName().equals(key)){
-                        if (languages.get(i).getTime().equals(languageList.get(key))) {
-                            flag = true;
-                            break;
-                        } else {
-                            languages.get(i).setTime(languageList.get(key));
-                            sevenDaysLanguageRepository.save(languages.get(i));
-                            flag = true;
-                            break;
-                        }
-                    }
-                }
-                if (flag == false) {
-                    SevenDaysLanguage language = new SevenDaysLanguage().builder()
-                            .name(name)
-                            .time(languageList.get(name))
-                            .member(member)
-                            .build();
-                    member.getSevenlanguages().add(language);
-                }
-            }
-            memberRepository.save(member);
-        }
-    }
-    private void set_Member_By_Project(Member member,Map<String,String> projectList) {
-        if(member.getSevenprojects().size()==0){
-            for (String key : projectList.keySet()) {
-                SevenDaysProject project = new SevenDaysProject().builder()
-                        .name(key)
-                        .time(projectList.get(key))
-                        .member(member)
-                        .build();
-                member.getSevenprojects().add(project);
-            }
-            memberRepository.save(member);
         }
         else{
-            List<SevenDaysProject> projects = sevendaysProjectRepository.findByMemberId(member.getId());
-            for(int i=0; i<projects.size();i++){
-                boolean flag = false;
-                String name="";
-                for(String key : projectList.keySet()){
-                    name = key;
-                    if(member.getSevenprojects().get(i).getName().equals(key)){
-                        if(projects.get(i).getName().equals(key)){
-                            if (projects.get(i).getTime().equals(projectList.get(key))) {
-                                flag = true;
-                                break;
-                            } else {
-                                projects.get(i).setTime(projectList.get(key));
-                                sevendaysProjectRepository.save(projects.get(i));
-                                flag = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-                if(flag==false){
-                    SevenDaysProject project = new SevenDaysProject().builder()
-                            .name(name)
-                            .time(projectList.get(name))
-                            .member(member)
-                            .build();
-                    member.getSevenprojects().add(project);
-                }
+            for(String languageName : languageList.keySet()){
+               if(languages.stream().anyMatch(language -> language.getName().equals(languageName))){
+                   SevenDaysLanguage findLanguage = (SevenDaysLanguage) languages.stream().filter(language -> language.getName().equals(languageName));
+                   addLanguageMember.getSevenlanguages().remove(findLanguage);
+                   findLanguage.setTime(languageList.get(languageName));
+                   addLanguageMember.getSevenlanguages().add(findLanguage);
+               }
+               else{
+                   SevenDaysLanguage createLanguage = new SevenDaysLanguage().builder()
+                           .name(languageName)
+                           .time(languageList.get(languageName))
+                           .member(addLanguageMember)
+                           .build();
+                   addLanguageMember.getSevenlanguages().add(createLanguage);
+               }
             }
-            memberRepository.save(member);
         }
+        memberRepository.save(addLanguageMember);
     }
-    private void set_Member_By_Editor(Member member,Map<String,String> editList) {
-        if(member.getSeveneditors().size()==0){
-            for (String key : editList.keySet()) {
-                SevenDaysEditor editor = new SevenDaysEditor().builder()
-                        .name(key)
-                        .time(editList.get(key))
-                        .member(member)
+    private void set_Member_By_Project(Member addProjectMember,Map<String,String> projectList) {
+        List<SevenDaysProject> projects = sevendaysProjectRepository.findByMemberId(addProjectMember.getId());
+        if(projects.isEmpty()){
+            for(String projectName : projectList.keySet()){
+                SevenDaysProject createProject = new SevenDaysProject().builder()
+                        .name(projectName)
+                        .time(projectList.get(projectName))
+                        .member(addProjectMember)
                         .build();
-                member.getSeveneditors().add(editor);
+                addProjectMember.getSevenprojects().add(createProject);
             }
-            memberRepository.save(member);
         }
         else{
-            List<SevenDaysEditor> editors = sevenDaysEditorRepository.findByMemberId(member.getId());
-            for(int i=0; i<editors.size();i++){
-                boolean flag = false;
-                String name="";
-                for(String key : editList.keySet()){
-                    name = key;
-                    if(editors.get(i).getName().equals(key)){
-                        if (editors.get(i).getTime().equals(editList.get(key))) {
-                            flag = true;
-                            break;
-                        } else {
-                            editors.get(i).setTime(editList.get(key));
-                            sevenDaysEditorRepository.save(editors.get(i));
-                            flag = true;
-                            break;
-                        }
-                    }
+            for(String projectName : projectList.keySet()){
+                if(projects.stream().anyMatch(project -> project.getName().equals(projectName))){
+                    SevenDaysProject findProject = (SevenDaysProject) projects.stream().filter(project -> project.getName().equals(projectName));
+                    addProjectMember.getSevenprojects().remove(findProject);
+                    findProject.setTime(projectList.get(projectName));
+                    addProjectMember.getSevenprojects().add(findProject);
                 }
-                if(flag==false){
-                    SevenDaysEditor editor = new SevenDaysEditor().builder()
-                            .name(name)
-                            .time(editList.get(name))
-                            .member(member)
+                else{
+                    SevenDaysProject createProject = new SevenDaysProject().builder()
+                            .name(projectName)
+                            .time(projectList.get(projectName))
+                            .member(addProjectMember)
                             .build();
-                    member.getSeveneditors().add(editor);
+                    addProjectMember.getSevenprojects().add(createProject);
                 }
             }
-            memberRepository.save(member);
         }
+        memberRepository.save(addProjectMember);
+    }
+    private void set_Member_By_Editor(Member addEditorMember,Map<String,String> editList) {
+        List<SevenDaysEditor> editors = sevenDaysEditorRepository.findByMemberId(addEditorMember.getId());
+        if(editors.isEmpty()){
+            for(String editorName : editList.keySet()){
+                SevenDaysEditor createEditor = new SevenDaysEditor().builder()
+                        .name(editorName)
+                        .time(editList.get(editorName))
+                        .member(addEditorMember)
+                        .build();
+                addEditorMember.getSeveneditors().add(createEditor);
+            }
+        }
+        else{
+            for(String editorName : editList.keySet()){
+                if(editors.stream().anyMatch(editor -> editor.getName().equals(editorName))){
+                    SevenDaysEditor findEditor = (SevenDaysEditor) editors.stream().filter(editor -> editor.getName().equals(editorName));
+                    addEditorMember.getSeveneditors().remove(findEditor);
+                    findEditor.setTime(editList.get(editorName));
+                    addEditorMember.getSeveneditors().add(findEditor);
+                }
+                else{
+                    SevenDaysEditor createEditor = new SevenDaysEditor().builder()
+                            .name(editorName)
+                            .time(editList.get(editorName))
+                            .member(addEditorMember)
+                            .build();
+                    addEditorMember.getSeveneditors().add(createEditor);
+                }
+            }
+        }
+        memberRepository.save(addEditorMember);
     }
 
 }
