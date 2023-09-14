@@ -339,11 +339,11 @@ public class MemberService {
         }
         else{
             for(String languageName : languageList.keySet()){
-               if(languages.stream().anyMatch(language -> language.getName().equals(languageName))){
-                   SevenDaysLanguage findLanguage = (SevenDaysLanguage) languages.stream().filter(language -> language.getName().equals(languageName));
+                Optional<SevenDaysLanguage> findLanguage = languages.stream().filter(language -> language.getName().equals(languageName)).findFirst();
+               if(findLanguage.isPresent()){
                    addLanguageMember.getSevenlanguages().remove(findLanguage);
-                   findLanguage.setTime(languageList.get(languageName));
-                   addLanguageMember.getSevenlanguages().add(findLanguage);
+                   findLanguage.get().setTime(languageList.get(languageName));
+                   addLanguageMember.getSevenlanguages().add(findLanguage.get());
                }
                else{
                    SevenDaysLanguage createLanguage = new SevenDaysLanguage().builder()
@@ -371,11 +371,12 @@ public class MemberService {
         }
         else{
             for(String projectName : projectList.keySet()){
-                if(projects.stream().anyMatch(project -> project.getName().equals(projectName))){
-                    SevenDaysProject findProject = (SevenDaysProject) projects.stream().filter(project -> project.getName().equals(projectName));
+                Optional<SevenDaysProject> findProject = projects.stream().filter(project -> project.getName().equals(projectName)).findFirst();
+                if(findProject.isPresent()){
+
                     addProjectMember.getSevenprojects().remove(findProject);
-                    findProject.setTime(projectList.get(projectName));
-                    addProjectMember.getSevenprojects().add(findProject);
+                    findProject.get().setTime(projectList.get(projectName));
+                    addProjectMember.getSevenprojects().add(findProject.get());
                 }
                 else{
                     SevenDaysProject createProject = new SevenDaysProject().builder()
@@ -403,11 +404,11 @@ public class MemberService {
         }
         else{
             for(String editorName : editList.keySet()){
+                Optional<SevenDaysEditor> findEditor = editors.stream().filter(editor -> editor.getName().equals(editorName)).findFirst();
                 if(editors.stream().anyMatch(editor -> editor.getName().equals(editorName))){
-                    SevenDaysEditor findEditor = (SevenDaysEditor) editors.stream().filter(editor -> editor.getName().equals(editorName));
                     addEditorMember.getSeveneditors().remove(findEditor);
-                    findEditor.setTime(editList.get(editorName));
-                    addEditorMember.getSeveneditors().add(findEditor);
+                    findEditor.get().setTime(editList.get(editorName));
+                    addEditorMember.getSeveneditors().add(findEditor.get());
                 }
                 else{
                     SevenDaysEditor createEditor = new SevenDaysEditor().builder()
