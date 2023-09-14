@@ -195,9 +195,9 @@ public class MemberService {
 
             responseInfoDto = new ResponseInfoDto().builder()
                 .name(findMember.get().getName())
-                .totalLanguages(findMember.get().getSevenlanguages())
-                .totalEditors(findMember.get().getSeveneditors())
-                .totalProejects(findMember.get().getSevenprojects())
+                .totalLanguages(findMember.get().getSevenlanguages().stream().distinct().toList())
+                .totalEditors(findMember.get().getSeveneditors().stream().distinct().toList())
+                .totalProejects(findMember.get().getSevenprojects().stream().distinct().toList())
                     .money(findMember.get().getMoney())
                     .oranization(findMember.get().getOrganization())
                     .imageURL(findMember.get().getImage())
