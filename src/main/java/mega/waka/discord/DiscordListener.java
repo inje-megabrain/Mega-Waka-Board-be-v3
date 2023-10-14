@@ -52,14 +52,17 @@ public class DiscordListener extends ListenerAdapter {
                 List<Member> memberList = memberRepository.findAll();
                 Map<String, Integer> memberMap = new HashMap<>();
                 for(Member member : memberList){
-                    Pattern pattern = Pattern.compile("\\b(\\d+) hrs (\\d+) mins\\b");
+                    Pattern pattern = Pattern.compile("\\b(\\d+) hrs (\\d+) min(s)?\\b");
                     Matcher matcher = pattern.matcher(member.getSevenDays());
                     if(matcher.find()){
                         int hour = Integer.parseInt(matcher.group(1));
                         int minute = Integer.parseInt(matcher.group(2));
                         memberMap.put(member.getName(),hour*60+minute);
                     }
-                    else memberMap.put(member.getName(),0);
+                    else{
+                        memberMap.put(member.getName(),0);
+                        System.out.println(member.getName());
+                    }
                 }
                 List<Map.Entry<String,Integer>> sortedList = new ArrayList<>(memberMap.entrySet());
                 Collections.sort(sortedList, Map.Entry.comparingByValue(Comparator.reverseOrder()));
@@ -73,6 +76,7 @@ public class DiscordListener extends ListenerAdapter {
                     if (totalMinutes < 10 * 60) {
                         if (totalMinutes > 0) {
                             newMessage += (i + 1) + " 등 - " + sortedList.get(i).getKey() + "\n -> " + hours + "시간 " + minutes + "분\n";
+                            System.out.println(sortedList.get(i).getValue());
                         } else {
                             newMessage += (i + 1) + " 등 - " + sortedList.get(i).getKey() + "\n -> 0시간 0분\n";
                         }
@@ -109,7 +113,7 @@ public class DiscordListener extends ListenerAdapter {
                     List<Member> memberList2 = memberRepository.findAll();
                     Map<String, Integer> memberMap2 = new HashMap<>();
                     for(Member member2 : memberList2){
-                        Pattern pattern = Pattern.compile("\\b(\\d+) hrs (\\d+) mins\\b");
+                        Pattern pattern = Pattern.compile("\\b(\\d+) hrs (\\d+) min(s)?\\b");
                         Matcher matcher = pattern.matcher(member2.getSevenDays());
                         if(matcher.find()){
                             int hour = Integer.parseInt(matcher.group(1));
@@ -154,7 +158,7 @@ public class DiscordListener extends ListenerAdapter {
         List<Member> memberList = memberRepository.findAll();
         Map<String, Integer> memberMap = new HashMap<>();
         for(Member member : memberList){
-            Pattern pattern = Pattern.compile("\\b(\\d+) hrs (\\d+) mins\\b");
+            Pattern pattern = Pattern.compile("\\b(\\d+) hrs (\\d+) min(s)?\\b");
             Matcher matcher = pattern.matcher(member.getSevenDays());
             if(matcher.find()){
                 int hour = Integer.parseInt(matcher.group(1));
@@ -211,7 +215,6 @@ public class DiscordListener extends ListenerAdapter {
                 initialDelay,
                 TimeUnit.DAYS.toSeconds(7),
                 TimeUnit.SECONDS);
-
     }
 
 
