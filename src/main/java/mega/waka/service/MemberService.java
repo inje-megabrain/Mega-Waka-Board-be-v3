@@ -340,6 +340,10 @@ public class MemberService {
         else{
             for(String languageName : languageList.keySet()){
                 Optional<SevenDaysLanguage> findLanguage = languages.stream().filter(language -> language.getName().equals(languageName)).findFirst();
+                List<SevenDaysLanguage> nonMatchList = languages.stream().filter(language->languageList.keySet().stream().noneMatch(j->j.equals(language.getName()))).collect(Collectors.toList());
+                if(!nonMatchList.isEmpty()){
+                    addLanguageMember.getSevenlanguages().remove(nonMatchList.iterator().next());
+                }
                if(findLanguage.isPresent()){
                    addLanguageMember.getSevenlanguages().remove(findLanguage);
                    findLanguage.get().setTime(languageList.get(languageName));
@@ -370,10 +374,13 @@ public class MemberService {
             }
         }
         else{
-            for(String projectName : projectList.keySet()){
+            for(String projectName : projectList.keySet()){ //JSON에서 가져온 projectList에서 여부 확인
                 Optional<SevenDaysProject> findProject = projects.stream().filter(project -> project.getName().equals(projectName)).findFirst();
-                if(findProject.isPresent()){
-
+                List<SevenDaysProject> nonMatchList = projects.stream().filter(project->projectList.keySet().stream().noneMatch(j->j.equals(project.getName()))).collect(Collectors.toList());
+                if(!nonMatchList.isEmpty()){ //JSON에도 존재하지 않는 데이터는 일주일내 사용하지 않았기 때문에 제거해준다
+                    addProjectMember.getSevenprojects().remove(nonMatchList.iterator().next());
+                }
+                if(findProject.isPresent()){ //JSON에서 가져온 project가 member에도 있을 때
                     addProjectMember.getSevenprojects().remove(findProject);
                     findProject.get().setTime(projectList.get(projectName));
                     addProjectMember.getSevenprojects().add(findProject.get());
@@ -405,6 +412,10 @@ public class MemberService {
         else{
             for(String editorName : editList.keySet()){
                 Optional<SevenDaysEditor> findEditor = editors.stream().filter(editor -> editor.getName().equals(editorName)).findFirst();
+                List<SevenDaysEditor> nonMatchList = editors.stream().filter(editor->editList.keySet().stream().noneMatch(j->j.equals(editor.getName()))).collect(Collectors.toList());
+                if(!nonMatchList.isEmpty()){
+                    addEditorMember.getSeveneditors().remove(nonMatchList.iterator().next());
+                }
                 if(editors.stream().anyMatch(editor -> editor.getName().equals(editorName))){
                     addEditorMember.getSeveneditors().remove(findEditor);
                     findEditor.get().setTime(editList.get(editorName));
