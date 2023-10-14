@@ -47,10 +47,6 @@ public class DiscordListener extends ListenerAdapter {
         embed.addField("https://megabrain.kr/waka", "", false);
         embed.setThumbnail("https://avatars.githubusercontent.com/inje-megabrain");
         embed.setFooter("메가브레인 와카 봇", "https://avatars.githubusercontent.com/inje-megabrain");
-        switch (event.getName()){
-            case "ping" : event.reply("pong").setEphemeral(false).queue();
-                break;
-        }
         switch(event.getName()){
             case "전체순위" :
                 List<Member> memberList = memberRepository.findAll();
@@ -71,13 +67,18 @@ public class DiscordListener extends ListenerAdapter {
                 embed.setColor(Color.green);
                 int cnt=0;
                 for(int i=0;i<sortedList.size();i++){
-                    if(sortedList.get(i).getValue() <=10*60){
-                        cnt++;
-                        newMessage += (i+1)+" 등 - "+sortedList.get(i).getKey()+"\n -> "+sortedList.get(i).getValue()/60+"시간 "+sortedList.get(i).getValue()%60+"분\n";
+                    int totalMinutes = sortedList.get(i).getValue();
+                    int hours = totalMinutes / 60;
+                    int minutes = totalMinutes % 60;
+                    if (totalMinutes < 10 * 60) {
+                        if (totalMinutes > 0) {
+                            newMessage += (i + 1) + " 등 - " + sortedList.get(i).getKey() + "\n -> " + hours + "시간 " + minutes + "분\n";
+                        } else {
+                            newMessage += (i + 1) + " 등 - " + sortedList.get(i).getKey() + "\n -> 0시간 0분\n";
+                        }
+                    } else {
+                        returnMessage += (i + 1) + " 등 - " + sortedList.get(i).getKey() + "\n -> " + hours + "시간 " + minutes + "분\n";
                     }
-                    else if(sortedList.get(i).getValue() > 10*60)
-                        returnMessage += (i+1)+" 등 - "+sortedList.get(i).getKey()+"\n -> "+sortedList.get(i).getValue()/60+"시간 "+sortedList.get(i).getValue()%60+"분\n";
-                    else newMessage += (i+1)+" 등 - "+sortedList.get(i).getKey()+"\n -> "+0+" 시간 "+0+"분\n";
                 }
                 if(cnt==0) newMessage += "현재 근무 시간 미달자가 없습니다.\n";
                 embed.setDescription(returnMessage +"\n"+ newMessage);
