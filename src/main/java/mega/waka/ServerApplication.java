@@ -39,6 +39,7 @@ public class ServerApplication {
 		}
 	}*/
 	public void startBot() {
+		sevenDaysWakaService.update_SevenDays();
 		JDA jda = JDABuilder.createDefault(token)
 				.setActivity(Activity.playing("코딩"))
 				.enableIntents(GatewayIntent.MESSAGE_CONTENT)

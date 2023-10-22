@@ -45,57 +45,11 @@ public class DiscordListener extends ListenerAdapter {
         this.memberRepository = memberRepository;
         this.sevenDaysWakaService = sevenDaysWakaService;
     }
-    @Transactional
-    @JsonIgnore
-    public void update_SevenDays(){
-        List<Member> members = memberRepository.findAll();
-        String responseData="";
-        try {
-            RestTemplate restTemplate = new RestTemplate();
-            String apiUrl ="https://wakatime.com/api/v1/users/current/summaries?range=last_7_days";
-            for (Member member : members) {
 
-                UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(apiUrl);
-
-                HttpHeaders headers = new HttpHeaders();
-                headers.setBasicAuth(member.getSecretKey(),"");
-
-                ResponseEntity<String> response = restTemplate.exchange(
-                        builder.toUriString(),
-                        HttpMethod.GET,
-                        new HttpEntity<>(headers),
-                        String.class
-                );
-                responseData = response.getBody();
-
-                JSONParser parser = new JSONParser();
-                JSONObject jsonObject = (JSONObject) parser.parse(responseData);
-                JSONObject cumulative_total  = (JSONObject) jsonObject.get("cumulative_total");
-                member.setSevenDays(cumulative_total.get("text").toString());
-
-                memberRepository.save(member);
-
-                DayOfWeek dayOfWeek = LocalDate.now().getDayOfWeek();
-                if(dayOfWeek.getDisplayName(TextStyle.FULL, Locale.KOREAN).equals("금요일") && !member.getMoney().getUpdateDate().isEqual(LocalDate.now())){
-                    int money = member.getMoney().getAmount();
-                    String [] time = member.getSevenDays().split(" ");
-                    int hour = Integer.valueOf(time[0]);
-                    money += (hour *9620)/10000;
-                    member.getMoney().setAmount(money);
-                    member.getMoney().setUpdateDate(LocalDate.now());
-                    memberRepository.save(member);
-                }
-
-            }
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-    }
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
         if(!event.getChannel().getId().equals("1090659127417638943")) return;
         super.onSlashCommandInteraction(event);
-        update_SevenDays();
         User user = event.getUser();
         String returnMessage = "";
         String newMessage = "!!!!!***근무 시간 미달자 ***!!!! \n";
@@ -117,7 +71,6 @@ public class DiscordListener extends ListenerAdapter {
                     }
                     else{
                         memberMap.put(member.getName(),0);
-                        System.out.println(member.getName());
                     }
                 }
                 List<Map.Entry<String,Integer>> sortedList = new ArrayList<>(memberMap.entrySet());
