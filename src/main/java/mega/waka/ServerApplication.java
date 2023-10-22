@@ -1,6 +1,8 @@
 package mega.waka;
 
 import mega.waka.discord.DiscordListener;
+import mega.waka.entity.Member;
+import mega.waka.entity.editor.SevenDaysEditor;
 import mega.waka.repository.MemberRepository;
 import mega.waka.service.SevenDaysWakaService;
 import net.dv8tion.jda.api.JDA;
@@ -43,7 +45,7 @@ public class ServerApplication {
 		JDA jda = JDABuilder.createDefault(token)
 				.setActivity(Activity.playing("코딩"))
 				.enableIntents(GatewayIntent.MESSAGE_CONTENT)
-				.addEventListeners(new DiscordListener(memberRepository,sevenDaysWakaService))
+				.addEventListeners(new DiscordListener(memberRepository))
 				.build();
 		jda.upsertCommand("개인순위","금주 와카타임 개인순위를 제공합니다.").setGuildOnly(true).queue();
 		jda.upsertCommand("전체순위","금주 와카타임 전체순위를 제공합니다.").setGuildOnly(true).queue();

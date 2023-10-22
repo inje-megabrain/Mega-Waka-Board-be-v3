@@ -11,5 +11,5 @@ spring:
   jackson:
     serialization:
       fail-on-empty-beans: false
-  async:
-    request-timeout: 100000
+    jpa:
+      open-in-view: true
