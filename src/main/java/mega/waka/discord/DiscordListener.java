@@ -41,7 +41,7 @@ public class DiscordListener extends ListenerAdapter {
 
         User user = event.getUser();
 
-        StringBuilder messange;
+        StringBuilder messange=new StringBuilder();
         sevenDaysWakaService.update_SevenDays();
         EmbedBuilder embed = setEmbed();
         switch(event.getName()){
@@ -50,7 +50,9 @@ public class DiscordListener extends ListenerAdapter {
                 List<Map.Entry<String,Integer>> sortedList = new ArrayList<>(memberMap.entrySet());
                 messange = returnToOverallRanking(sortedList);
                 embed.setTitle(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))+" 기준 " +"와카보드 전체 순위");
-                embed.setDescription(messange.toString());;
+                embed.setDescription(messange.toString());
+                memberMap.clear();
+                sortedList.clear();
                 break;
             case "개인순위" :
                 Member member = findMemberNameByDiscord_Id(user.getName());
