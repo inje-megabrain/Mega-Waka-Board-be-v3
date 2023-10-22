@@ -36,6 +36,7 @@ public class ServerApplication {
 				.build();
 		jda.upsertCommand("개인순위","금주 와카타임 개인순위를 제공합니다.").setGuildOnly(true).queue();
 		jda.upsertCommand("전체순위","금주 와카타임 전체순위를 제공합니다.").setGuildOnly(true).queue();
+		jda.upsertCommand("ping","pong").setGuildOnly(true).queue();
 	}
 	@Component
 	class DiscordToken {
