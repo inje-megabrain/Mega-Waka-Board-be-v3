@@ -36,12 +36,11 @@ public class DiscordListener extends ListenerAdapter {
     }
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {  //test->1116650046797135992, 1090659127417638943
-        if(!event.getChannel().getId().equals("1090659127417638943")) return;
+        if(!event.getChannel().getId().equals("1116650046797135992")) return;
         super.onSlashCommandInteraction(event);
 
         User user = event.getUser();
-
-        StringBuilder messange=new StringBuilder();
+        StringBuilder messange;
         sevenDaysWakaService.update_SevenDays();
         EmbedBuilder embed = setEmbed();
         switch(event.getName()){
@@ -106,7 +105,6 @@ public class DiscordListener extends ListenerAdapter {
             }
             else{
                 memberMap.put(member.getName(),0);
-                System.out.println(member.getName());
             }
         }
         return memberMap;
