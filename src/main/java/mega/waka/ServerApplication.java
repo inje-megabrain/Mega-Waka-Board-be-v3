@@ -2,7 +2,6 @@ package mega.waka;
 
 import mega.waka.discord.DiscordListener;
 import mega.waka.repository.MemberRepository;
-import mega.waka.service.MemberService;
 import mega.waka.service.SevenDaysWakaService;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -16,25 +15,20 @@ import org.springframework.stereotype.Component;
 
 @SpringBootApplication
 public class ServerApplication {
-	private static MemberRepository memberRepository;
+	private final MemberRepository memberRepository;
+	private final SevenDaysWakaService sevenDaysWakaService;
+	private final DiscordToken discordToken;
 
-	public ServerApplication(MemberRepository memberRepository) {
+	public ServerApplication(MemberRepository memberRepository, SevenDaysWakaService sevenDaysWakaService, DiscordToken discordToken) {
 		this.memberRepository = memberRepository;
+		this.sevenDaysWakaService = sevenDaysWakaService;
+		this.discordToken = discordToken;
 	}
 
 	public static void main(String[] args) {
 		ApplicationContext context = SpringApplication.run(ServerApplication.class, args);
-		DiscordToken discordBotTokenEntity = context.getBean(DiscordToken.class);
-		String discordBotToken = discordBotTokenEntity.getToken();
-
-		JDA jda = JDABuilder.createDefault(discordBotToken)
-				.setActivity(Activity.playing("코딩"))
-				.enableIntents(GatewayIntent.MESSAGE_CONTENT)
-				.addEventListeners(new DiscordListener(memberRepository))
-				.build();
-		jda.upsertCommand("개인순위","금주 와카타임 개인순위를 제공합니다.").setGuildOnly(true).queue();
-		jda.upsertCommand("전체순위","금주 와카타임 전체순위를 제공합니다.").setGuildOnly(true).queue();
-		jda.upsertCommand("ping","pong").setGuildOnly(true).queue();
+		ServerApplication serverApplication = context.getBean(ServerApplication.class);
+		serverApplication.startBot();
 	}
 	@Component
 	class DiscordToken {
@@ -43,6 +37,17 @@ public class ServerApplication {
 		public String getToken() {
 			return token;
 		}
+	}
+	public void startBot() {
+		JDA jda = JDABuilder.createDefault(discordToken.token)
+				.setActivity(Activity.playing("코딩"))
+				.enableIntents(GatewayIntent.MESSAGE_CONTENT)
+				.addEventListeners(new DiscordListener(memberRepository,sevenDaysWakaService))
+				.build();
+		jda.upsertCommand("개인순위","금주 와카타임 개인순위를 제공합니다.").setGuildOnly(true).queue();
+		jda.upsertCommand("전체순위","금주 와카타임 전체순위를 제공합니다.").setGuildOnly(true).queue();
+		jda.upsertCommand("ping","pong").setGuildOnly(true).queue();
+		// 나머지 코드
 	}
 
 }

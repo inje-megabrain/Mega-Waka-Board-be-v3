@@ -13,13 +13,11 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -40,61 +38,18 @@ import java.util.regex.Pattern;
 public class DiscordListener extends ListenerAdapter {
 
     private final MemberRepository memberRepository;
+    private final SevenDaysWakaService sevenDaysWakaService;
 
-    public DiscordListener(MemberRepository memberRepository) {
+    public DiscordListener(MemberRepository memberRepository, SevenDaysWakaService sevenDaysWakaService) {
         this.memberRepository = memberRepository;
+        this.sevenDaysWakaService = sevenDaysWakaService;
     }
-    @Transactional
-    @JsonIgnore
-    public void update_SevenDays(){
-        List<Member> members = memberRepository.findAll();
-        String responseData="";
-        try {
-            RestTemplate restTemplate = new RestTemplate();
-            String apiUrl ="https://wakatime.com/api/v1/users/current/summaries?range=last_7_days";
-            for (Member member : members) {
 
-                UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(apiUrl);
-
-                HttpHeaders headers = new HttpHeaders();
-                headers.setBasicAuth(member.getSecretKey(),"");
-
-                ResponseEntity<String> response = restTemplate.exchange(
-                        builder.toUriString(),
-                        HttpMethod.GET,
-                        new HttpEntity<>(headers),
-                        String.class
-                );
-                responseData = response.getBody();
-
-                JSONParser parser = new JSONParser();
-                JSONObject jsonObject = (JSONObject) parser.parse(responseData);
-                JSONObject cumulative_total  = (JSONObject) jsonObject.get("cumulative_total");
-                member.setSevenDays(cumulative_total.get("text").toString());
-
-                memberRepository.save(member);
-
-                DayOfWeek dayOfWeek = LocalDate.now().getDayOfWeek();
-                if(dayOfWeek.getDisplayName(TextStyle.FULL, Locale.KOREAN).equals("금요일") && !member.getMoney().getUpdateDate().isEqual(LocalDate.now())){
-                    int money = member.getMoney().getAmount();
-                    String [] time = member.getSevenDays().split(" ");
-                    int hour = Integer.valueOf(time[0]);
-                    money += (hour *9620)/10000;
-                    member.getMoney().setAmount(money);
-                    member.getMoney().setUpdateDate(LocalDate.now());
-                    memberRepository.save(member);
-                }
-
-            }
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-    }
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
         if(!event.getChannel().getId().equals("1090659127417638943")) return;
         super.onSlashCommandInteraction(event);
-        update_SevenDays();
+        sevenDaysWakaService.update_SevenDays();
         User user = event.getUser();
         String returnMessage = "";
         String newMessage = "!!!!!***근무 시간 미달자 ***!!!! \n";
