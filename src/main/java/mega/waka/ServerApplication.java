@@ -17,12 +17,12 @@ import org.springframework.stereotype.Component;
 public class ServerApplication {
 	private final MemberRepository memberRepository;
 	private final SevenDaysWakaService sevenDaysWakaService;
-	private final DiscordToken discordToken;
+	@Value("${discord.bot.token}")
+	private String token;
 
-	public ServerApplication(MemberRepository memberRepository, SevenDaysWakaService sevenDaysWakaService, DiscordToken discordToken) {
+	public ServerApplication(MemberRepository memberRepository, SevenDaysWakaService sevenDaysWakaService) {
 		this.memberRepository = memberRepository;
 		this.sevenDaysWakaService = sevenDaysWakaService;
-		this.discordToken = discordToken;
 	}
 
 	public static void main(String[] args) {
@@ -30,16 +30,16 @@ public class ServerApplication {
 		ServerApplication serverApplication = context.getBean(ServerApplication.class);
 		serverApplication.startBot();
 	}
-	@Component
+	/*@Component
 	class DiscordToken {
 		@Value("${discord.bot.token}")
 		private String token;
 		public String getToken() {
 			return token;
 		}
-	}
+	}*/
 	public void startBot() {
-		JDA jda = JDABuilder.createDefault(discordToken.token)
+		JDA jda = JDABuilder.createDefault(token)
 				.setActivity(Activity.playing("코딩"))
 				.enableIntents(GatewayIntent.MESSAGE_CONTENT)
 				.addEventListeners(new DiscordListener(memberRepository,sevenDaysWakaService))
