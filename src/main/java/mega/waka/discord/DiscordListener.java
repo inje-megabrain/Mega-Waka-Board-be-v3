@@ -38,7 +38,6 @@ public class DiscordListener extends ListenerAdapter {
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
         if(!event.getChannel().getId().equals("1090659127417638943")) return;
         super.onSlashCommandInteraction(event);
-        sevenDaysWakaService.update_SevenDays();
         User user = event.getUser();
         String returnMessage = "";
         String newMessage = "!!!!!***근무 시간 미달자 ***!!!! \n";
@@ -153,7 +152,6 @@ public class DiscordListener extends ListenerAdapter {
     }
 
     public void sendToSchedule(@NotNull ReadyEvent readyEvent){
-        sevenDaysWakaService.update_SevenDays();
         List<Member> memberList = memberRepository.findAll();
         Map<String, Integer> memberMap = new HashMap<>();
         for(Member member : memberList){
