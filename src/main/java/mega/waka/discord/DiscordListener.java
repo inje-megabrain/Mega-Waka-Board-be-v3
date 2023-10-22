@@ -10,12 +10,22 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.awt.*;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.List;
@@ -38,6 +48,7 @@ public class DiscordListener extends ListenerAdapter {
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
         if(!event.getChannel().getId().equals("1090659127417638943")) return;
         super.onSlashCommandInteraction(event);
+        sevenDaysWakaService.update_SevenDays();
         User user = event.getUser();
         String returnMessage = "";
         String newMessage = "!!!!!***근무 시간 미달자 ***!!!! \n";
@@ -215,6 +226,5 @@ public class DiscordListener extends ListenerAdapter {
                 TimeUnit.DAYS.toSeconds(7),
                 TimeUnit.SECONDS);
     }
-
 
 }
