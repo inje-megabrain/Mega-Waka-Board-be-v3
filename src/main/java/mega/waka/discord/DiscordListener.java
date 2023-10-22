@@ -36,7 +36,7 @@ public class DiscordListener extends ListenerAdapter {
     }
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {  //test->1116650046797135992, 1090659127417638943
-        if(!event.getChannel().getId().equals("1090659127417638943")) return;
+        if(!event.getChannel().getId().equals("1116650046797135992")) return;
         super.onSlashCommandInteraction(event);
 
         User user = event.getUser();
@@ -51,20 +51,16 @@ public class DiscordListener extends ListenerAdapter {
             case "전체순위" :
                 messange = returnToOverallRanking(sortedList);
                 embed.setTitle(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))+" 기준 " +"와카보드 전체 순위");
-                embed.setDescription(messange.toString());
-                memberMap.clear();
-                sortedList.clear();
+                embed.setDescription(messange.toString());;
                 break;
             case "개인순위" :
                 Member member = findMemberNameByDiscord_Id(user.getName());
-                messange = returnToPersonalRanking(sortedList,member);
+                messange = returnToPersonalRanking(member);
                 embed.setTitle(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))+" 기준 " +"와카보드 개인 순위");
                 embed.setDescription(messange.toString());
-                memberMap.clear();
-                sortedList.clear();
                 break;
         }
-        event.replyEmbeds(embed.build()).setEphemeral(false).queue();
+        event.replyEmbeds(embed.build()).setEphemeral(true).queue();
     }
 
     @Override
@@ -158,25 +154,30 @@ public class DiscordListener extends ListenerAdapter {
         if(cnt==0) message.append("현재 근무 시간 미달자가 없습니다.\n");
         return message;
     }
-    public StringBuilder returnToPersonalRanking(List<Map.Entry<String,Integer>> sortedList,Member member){
-        Collections.sort(sortedList, Map.Entry.comparingByValue(Comparator.reverseOrder()));
+    public StringBuilder returnToPersonalRanking(Member member){
         StringBuilder message = new StringBuilder();
-        int cnt=0;
-        for(int i=0;i<sortedList.size();i++){
-            if(sortedList.get(i).getKey().equals(member.getName())){
-
-                if(sortedList.get(i).getValue() <=10*60) {
-                    cnt++;
-                    message.append( i+1+" 등 - "+member.getName()+"\n -> "+sortedList.get(i).getValue()/60+"시간 "+sortedList.get(i).getValue()%60+"분\n");
-                }
-                else if(sortedList.get(i).getValue() > 10*60){
-                    message.append((i+1)+"등 - "+member.getName()+"\n -> "+sortedList.get(i).getValue()/60+"시간 "+sortedList.get(i).getValue()%60+"분\n");
-                }
-                else  message.append((i+1)+" 등 - "+member.getName()+"\n -> "+0+" 시간 "+0+"분\n");
-            }
+        Pattern pattern = Pattern.compile("\\b(\\d+) hrs (\\d+) min(s)?\\b");
+        Matcher matcher = pattern.matcher(member.getSevenDays());
+        int hour =0;
+        int minute = 0;
+        if(matcher.find()){
+            hour = Integer.parseInt(matcher.group(1));
+            minute = Integer.parseInt(matcher.group(2));
         }
+        int cnt=0;
+        int totalTime=hour*60+minute;
+        if(totalTime <=10*60) {
+            cnt++;
+            message.append( "- "+member.getName()+"\n"+"-> "+hour+" 시간 "+minute+" 분\n");
+        }
+        else if(totalTime > 10*60){
+            message.append("- "+member.getName()+"\n"+"-> "+hour+" 시간 "+minute+" 분\n");
+        }
+        else  message.append("- "+member.getName()+"\n"+"-> 이번주 근무 시간이 없습니다.");
+
         if(cnt==0) message.append(member.getName() + "님은 근무 시간 미달자가 아닙니다.\n");
         else message.append(member.getName() + "님은 근무 시간 미달자입니다.\n");
+
         return message;
     }
     public EmbedBuilder setEmbed(){
