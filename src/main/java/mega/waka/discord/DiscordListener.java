@@ -1,32 +1,20 @@
 package mega.waka.discord;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotNull;
 import mega.waka.entity.Member;
 import mega.waka.repository.MemberRepository;
-import mega.waka.service.SevenDaysWakaService;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
+
 
 import java.awt.*;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.time.format.TextStyle;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.List;
@@ -157,13 +145,14 @@ public class DiscordListener extends ListenerAdapter {
             int minutes = totalMinutes % 60;
             if (totalMinutes < 10 * 60) {
                 if (totalMinutes > 0) {
+                    ++cnt;
+                    if(cnt==1) message.append("****** 근무시간 미달자 ******");
                     message.append((i + 1) + " 등 - " + sortedList.get(i).getKey() + "\n -> " + hours + "시간 " + minutes + "분\n");
                 } else {
                     message.append((i + 1) + " 등 - " + sortedList.get(i).getKey() + "\n -> 0시간 0분\n");
                 }
             } else {
-                ++cnt;
-                if(cnt==1) message.append("****** 근무시간 미달자 ******");
+
                 message.append((i + 1) + " 등 - " + sortedList.get(i).getKey() + "\n -> " + hours + "시간 " + minutes + "분\n");
             }
         }
