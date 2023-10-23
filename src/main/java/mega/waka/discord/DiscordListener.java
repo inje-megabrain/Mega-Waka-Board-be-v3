@@ -159,7 +159,7 @@ public class DiscordListener extends ListenerAdapter {
                 message.append((i + 1) + " 등 - " + sortedList.get(i).getKey() + "\n -> " + hours + " hours " + minutes + " mins\n");
             }
         }
-        if(cnt==0) message.append("현재 근무 시간 미달자가 없습니다.\n");
+        if(cnt==0) message.append("There are currently no people who are short of working hours.\n");
         return message;
     }
     public StringBuilder returnToPersonalRanking(List<Map.Entry<String,Integer>> sortedList,Member member){
@@ -191,8 +191,8 @@ public class DiscordListener extends ListenerAdapter {
         member = memberRepository.findMemberByNameWithSevenProjects(name);
         Optional<SevenDaysProject> project = member.getSevenprojects().stream().max(Comparator.comparing(item->item.getTime().substring(0,2)));
         message.append("\n Most Project : "+project.get().getName() +"->"+project.get().getTime());
-        if(cnt==0) message.append("\n"+member.getName() + "You are not short of working hours.\n");
-        else message.append("\n"+member.getName() + "\nYou are short of working hours.\n");
+        if(cnt==0) message.append("\n You are not short of working hours.\n");
+        else message.append("\n You are short of working hours.\n");
         return message;
     }
     public EmbedBuilder setEmbed(){
