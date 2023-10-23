@@ -47,7 +47,7 @@ public class DiscordListener extends ListenerAdapter {
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {  //test->1116650046797135992, 1090659127417638943
         try{
-            if(!event.getChannel().getId().equals("1116650046797135992")) return;
+            if(!event.getChannel().getId().equals("1090659127417638943")) return;
             super.onSlashCommandInteraction(event);
 
             User user = event.getUser();
@@ -159,11 +159,11 @@ public class DiscordListener extends ListenerAdapter {
                 if (totalMinutes > 0) {
                     message.append((i + 1) + " 등 - " + sortedList.get(i).getKey() + "\n -> " + hours + "시간 " + minutes + "분\n");
                 } else {
-                    ++cnt;
-                    if(cnt==1) message.append("****** 근무시간 미달자 ******");
                     message.append((i + 1) + " 등 - " + sortedList.get(i).getKey() + "\n -> 0시간 0분\n");
                 }
             } else {
+                ++cnt;
+                if(cnt==1) message.append("****** 근무시간 미달자 ******");
                 message.append((i + 1) + " 등 - " + sortedList.get(i).getKey() + "\n -> " + hours + "시간 " + minutes + "분\n");
             }
         }
