@@ -40,7 +40,7 @@ public class DiscordListener extends ListenerAdapter {
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {  //test->1116650046797135992, 1090659127417638943
         try{
-            if(!event.getChannel().getId().equals("1090659127417638943")) return;
+            if(!event.getChannel().getId().equals("1116650046797135992")) return;
             super.onSlashCommandInteraction(event);
 
             User user = event.getUser();
@@ -181,19 +181,91 @@ public class DiscordListener extends ListenerAdapter {
         }
         String name = member.getName();
         member = memberRepository.findMemberByNameWithSevenEditors(name);
-        Optional<SevenDaysEditor> editor = member.getSeveneditors().stream().max(Comparator.comparing(item->item.getTime().substring(0,2)));
-        message.append("Most Editor : "+editor.get().getName() +"->"+editor.get().getTime());
+        String [] editorNameAndTime =findToMaxTimeToMemberSevenDaysEditor(member.getSeveneditors());
+        if(editorNameAndTime[0].equals("")) message.append("There are no Editors worked on.");
+        else message.append("Most Editor : "+editorNameAndTime[0] +"->"+editorNameAndTime[1]);
 
         member = memberRepository.findMemberByNameWithSevenLanguages(name);
-        Optional<SevenDaysLanguage> language = member.getSevenlanguages().stream().max(Comparator.comparing(item->item.getTime().substring(0,2)));
-        message.append("\n Most Language : "+language.get().getName() +"->"+language.get().getTime());
+        String [] languageNameAndTime =findToMaxTimeToMemberSevenDaysLanguage(member.getSevenlanguages());
+        if(languageNameAndTime[0].equals("")) message.append("There are no Languages worked on.");
+        else message.append("\n Most Language : "+languageNameAndTime[0] +"->"+languageNameAndTime[1]);
 
         member = memberRepository.findMemberByNameWithSevenProjects(name);
-        Optional<SevenDaysProject> project = member.getSevenprojects().stream().max(Comparator.comparing(item->item.getTime().substring(0,2)));
-        message.append("\n Most Project : "+project.get().getName() +"->"+project.get().getTime());
+        String [] projectNameAndTime =findToMaxTimeToMemberSevenDaysProject(member.getSevenprojects());
+        if(languageNameAndTime[0].equals("")) message.append("There are no Projects worked on.");
+        else message.append("\n Most Project : "+projectNameAndTime[0] +"->"+projectNameAndTime[1]);
         if(cnt==0) message.append("\n You are not short of working hours.\n");
         else message.append("\n You are short of working hours.\n");
         return message;
+    }
+    public String[] findToMaxTimeToMemberSevenDaysProject(List<SevenDaysProject>projects){
+        int max = 0;
+        String name = "";
+        String [] returnTo = new String[2];
+        for(SevenDaysProject project :projects){
+            String [] time = project.getTime().split(":");
+            int hour = Integer.parseInt(time[0]);
+            int min = Integer.parseInt(time[1]);
+            if(max<(hour*60)+min){
+                max = (hour*60)+min;
+                name = project.getName();
+            }
+        }
+        if(name.equals("") && max==0){
+            returnTo[0] = "";
+            returnTo[1]="";
+        }
+        else{
+            returnTo[0] = name;
+            returnTo[1] = max/60 + " hours " +max%60+" mins";
+        }
+        return returnTo;
+    }
+    public String[] findToMaxTimeToMemberSevenDaysLanguage(List<SevenDaysLanguage>languages){
+        int max = 0;
+        String name = "";
+        String [] returnTo = new String[2];
+        for(SevenDaysLanguage language :languages){
+            String [] time = language.getTime().split(":");
+            int hour = Integer.parseInt(time[0]);
+            int min = Integer.parseInt(time[1]);
+            if(max<(hour*60)+min){
+                max = (hour*60)+min;
+                name = language.getName();
+            }
+        }
+        if(name.equals("") && max==0){
+            returnTo[0] = "";
+            returnTo[1]="";
+        }
+        else{
+            returnTo[0] = name;
+            returnTo[1] = max/60 + " hours " +max%60+" mins";
+        }
+        return returnTo;
+    }
+    public String[] findToMaxTimeToMemberSevenDaysEditor(List<SevenDaysEditor>editors){
+        int max = 0;
+        String name = "";
+        String [] returnTo = new String[2];
+        for(SevenDaysEditor editor :editors){
+            String [] time = editor.getTime().split(":");
+            int hour = Integer.parseInt(time[0]);
+            int min = Integer.parseInt(time[1]);
+            if(max<hour*60+min){
+                max = hour*60+min;
+                name = editor.getName();
+            }
+        }
+        if(name.equals("") && max==0){
+            returnTo[0] = "";
+            returnTo[1]="";
+        }
+        else{
+            returnTo[0] = name;
+            returnTo[1] = max/60 + " hours " +max%60+" mins";
+        }
+        return returnTo;
     }
     public EmbedBuilder setEmbed(){
         EmbedBuilder embed = new EmbedBuilder();
