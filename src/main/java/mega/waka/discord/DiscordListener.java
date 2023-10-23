@@ -40,7 +40,7 @@ public class DiscordListener extends ListenerAdapter {
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {  //test->1116650046797135992, 1090659127417638943
         try{
-            if(!event.getChannel().getId().equals("1116650046797135992")) return;
+            if(!event.getChannel().getId().equals("1090659127417638943")) return;
             super.onSlashCommandInteraction(event);
 
             User user = event.getUser();
@@ -187,12 +187,12 @@ public class DiscordListener extends ListenerAdapter {
 
         member = memberRepository.findMemberByNameWithSevenLanguages(name);
         String [] languageNameAndTime =findToMaxTimeToMemberSevenDaysLanguage(member.getSevenlanguages());
-        if(languageNameAndTime[0].equals("")) message.append("There are no Languages worked on.");
+        if(languageNameAndTime[0].equals("")) message.append("\nThere are no Languages worked on.");
         else message.append("\n Most Language : "+languageNameAndTime[0] +"->"+languageNameAndTime[1]);
 
         member = memberRepository.findMemberByNameWithSevenProjects(name);
         String [] projectNameAndTime =findToMaxTimeToMemberSevenDaysProject(member.getSevenprojects());
-        if(languageNameAndTime[0].equals("")) message.append("There are no Projects worked on.");
+        if(languageNameAndTime[0].equals("")) message.append("\nThere are no Projects worked on.");
         else message.append("\n Most Project : "+projectNameAndTime[0] +"->"+projectNameAndTime[1]);
         if(cnt==0) message.append("\n You are not short of working hours.\n");
         else message.append("\n You are short of working hours.\n");
