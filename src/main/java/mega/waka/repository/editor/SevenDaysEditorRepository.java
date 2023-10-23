@@ -12,4 +12,6 @@ import java.util.UUID;
 public interface SevenDaysEditorRepository extends JpaRepository<SevenDaysEditor, Long> {
 
     List<SevenDaysEditor> findByMemberId(UUID memberId);
+
+
 }

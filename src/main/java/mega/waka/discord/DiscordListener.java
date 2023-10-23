@@ -2,14 +2,19 @@ package mega.waka.discord;
 
 import jakarta.validation.constraints.NotNull;
 import mega.waka.entity.Member;
+import mega.waka.entity.editor.SevenDaysEditor;
+import mega.waka.entity.language.SevenDaysLanguage;
+import mega.waka.entity.project.SevenDaysProject;
 import mega.waka.repository.MemberRepository;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import java.awt.*;
@@ -35,7 +40,7 @@ public class DiscordListener extends ListenerAdapter {
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {  //test->1116650046797135992, 1090659127417638943
         try{
-            if(!event.getChannel().getId().equals("1090659127417638943")) return;
+            if(!event.getChannel().getId().equals("1116650046797135992")) return;
             super.onSlashCommandInteraction(event);
 
             User user = event.getUser();
@@ -67,7 +72,6 @@ public class DiscordListener extends ListenerAdapter {
             System.out.println(e);
         }
     }
-
     @Override
     public void onReady(ReadyEvent event) {
         sendToSchedule(event);
@@ -109,7 +113,6 @@ public class DiscordListener extends ListenerAdapter {
             }
             else{
                 memberMap.put(member.getName(),0);
-                System.out.println(member.getName());
             }
         }
         return memberMap;
@@ -146,14 +149,14 @@ public class DiscordListener extends ListenerAdapter {
             if (totalMinutes < 10 * 60) {
                 if (totalMinutes > 0) {
                     ++cnt;
-                    if(cnt==1) message.append("****** 근무시간 미달자 ******");
-                    message.append((i + 1) + " 등 - " + sortedList.get(i).getKey() + "\n -> " + hours + "시간 " + minutes + "분\n");
+                    if(cnt==1) message.append("\n****** Underworking Hours ******\n");
+                    message.append((i + 1) + " 등 - " + sortedList.get(i).getKey() + "\n -> " + hours + " hours " + minutes + " mins\n");
                 } else {
-                    message.append((i + 1) + " 등 - " + sortedList.get(i).getKey() + "\n -> 0시간 0분\n");
+                    message.append((i + 1) + " 등 - " + sortedList.get(i).getKey() + "\n -> 0 hours 0 mins\n");
                 }
             } else {
 
-                message.append((i + 1) + " 등 - " + sortedList.get(i).getKey() + "\n -> " + hours + "시간 " + minutes + "분\n");
+                message.append((i + 1) + " 등 - " + sortedList.get(i).getKey() + "\n -> " + hours + " hours " + minutes + " mins\n");
             }
         }
         if(cnt==0) message.append("현재 근무 시간 미달자가 없습니다.\n");
@@ -168,16 +171,28 @@ public class DiscordListener extends ListenerAdapter {
 
                 if(sortedList.get(i).getValue() <=10*60) {
                     cnt++;
-                    message.append( i+1+" 등 - "+member.getName()+"\n -> "+sortedList.get(i).getValue()/60+"시간 "+sortedList.get(i).getValue()%60+"분\n");
+                    message.append( i+1+" 등 - "+member.getName()+"\n -> "+sortedList.get(i).getValue()/60+" hours "+sortedList.get(i).getValue()%60+" mins\n");
                 }
                 else if(sortedList.get(i).getValue() > 10*60){
-                    message.append((i+1)+"등 - "+member.getName()+"\n -> "+sortedList.get(i).getValue()/60+"시간 "+sortedList.get(i).getValue()%60+"분\n");
+                    message.append((i+1)+"등 - "+member.getName()+"\n -> "+sortedList.get(i).getValue()/60+" hours "+sortedList.get(i).getValue()%60+" mins\n");
                 }
-                else  message.append((i+1)+" 등 - "+member.getName()+"\n -> "+0+" 시간 "+0+"분\n");
+                else  message.append((i+1)+" 등 - "+member.getName()+"\n -> "+0+" hours "+0+" mins\n");
             }
         }
-        if(cnt==0) message.append(member.getName() + "님은 근무 시간 미달자가 아닙니다.\n");
-        else message.append(member.getName() + "님은 근무 시간 미달자입니다.\n");
+        String name = member.getName();
+        member = memberRepository.findMemberByNameWithSevenEditors(name);
+        Optional<SevenDaysEditor> editor = member.getSeveneditors().stream().max(Comparator.comparing(item->item.getTime().substring(0,2)));
+        message.append("Most Editor : "+editor.get().getName() +"->"+editor.get().getTime());
+
+        member = memberRepository.findMemberByNameWithSevenLanguages(name);
+        Optional<SevenDaysLanguage> language = member.getSevenlanguages().stream().max(Comparator.comparing(item->item.getTime().substring(0,2)));
+        message.append("\n Most Language : "+language.get().getName() +"->"+language.get().getTime());
+
+        member = memberRepository.findMemberByNameWithSevenProjects(name);
+        Optional<SevenDaysProject> project = member.getSevenprojects().stream().max(Comparator.comparing(item->item.getTime().substring(0,2)));
+        message.append("\n Most Project : "+project.get().getName() +"->"+project.get().getTime());
+        if(cnt==0) message.append("\n"+member.getName() + "You are not short of working hours.\n");
+        else message.append("\n"+member.getName() + "\nYou are short of working hours.\n");
         return message;
     }
     public EmbedBuilder setEmbed(){
