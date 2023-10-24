@@ -133,6 +133,9 @@ public class DiscordListener extends ListenerAdapter {
         else if(discord_id.equals("Rod12")) findMember = memberRepository.findByName("이욱진");
         else if(discord_id.equals("재민")) findMember = memberRepository.findByName("김재민");
         else if(discord_id.equals("hongjihyeon")) findMember = memberRepository.findByName("홍지현");
+        else if(discord_id.equals("puleugo")) findMember = memberRepository.findByName("임채성");
+        else if(discord_id.equals("log4hoon")) findMember = memberRepository.findByName("박성훈");
+        else if(discord_id.equals("moonjunho.")) findMember = memberRepository.findByName("문준호");
         else{
             findMember = memberRepository.findByName(discord_id);
         }
