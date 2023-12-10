@@ -6,15 +6,14 @@ import mega.waka.entity.editor.SevenDaysEditor;
 import mega.waka.entity.language.SevenDaysLanguage;
 import mega.waka.entity.project.SevenDaysProject;
 import mega.waka.repository.MemberRepository;
+import mega.waka.service.SevenDaysWakaService;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 
 import java.awt.*;
@@ -33,9 +32,11 @@ import java.util.regex.Pattern;
 public class DiscordListener extends ListenerAdapter {
 
     private final MemberRepository memberRepository;
+    private final SevenDaysWakaService sevenDaysWakaService;
     @Autowired
-    public DiscordListener(MemberRepository memberRepository) {
+    public DiscordListener(MemberRepository memberRepository, SevenDaysWakaService sevenDaysWakaService) {
         this.memberRepository = memberRepository;
+        this.sevenDaysWakaService = sevenDaysWakaService;
     }
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {  //test->1116650046797135992, 1090659127417638943
@@ -78,6 +79,7 @@ public class DiscordListener extends ListenerAdapter {
     }
 
     public void sendToSchedule(@NotNull ReadyEvent readyEvent){
+        sevenDaysWakaService.update_SevenDays();
         Map<String, Integer> memberMap = returnToMemberTimeByMap();
         List<Map.Entry<String,Integer>> sortedList = new ArrayList<>(memberMap.entrySet());
         StringBuilder messange = returnToOverallRanking(sortedList);
@@ -102,6 +104,7 @@ public class DiscordListener extends ListenerAdapter {
     }
     public Map<String, Integer> returnToMemberTimeByMap (){
         Map<String, Integer> memberMap = new HashMap<>();
+        sevenDaysWakaService.update_SevenDays();
         List<Member> memberList = memberRepository.findAll();
         for(Member member : memberList){
             Pattern pattern = Pattern.compile("\\b(\\d+) hrs (\\d+) min(s)?\\b");
@@ -286,8 +289,8 @@ public class DiscordListener extends ListenerAdapter {
                 .withHour(0)
                 .withMinute(0)
                 .withSecond(0);
-
-        if (now.getDayOfWeek() == DayOfWeek.FRIDAY && now.isAfter(nextFriday)) {
+        
+        if (now.getDayOfWeek() == DayOfWeek.SATURDAY && now.isAfter(nextFriday)) {
             nextFriday = nextFriday.plusWeeks(1);
         }
         nextFriday = nextFriday.withHour(0).withMinute(0);
